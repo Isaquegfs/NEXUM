@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Segundo cérebro</title>
+<style>
+:root{--bg:#eef1f4;--papel:#fbfcfd;--tinta:#16202a;--suave:#5b6b7a;--linha:#d5dce3;--acento:#2b4fd8;--c-tutorial:#2b4fd8;--c-erro-solucao:#c2410c;--c-ideia:#7c3aed;--c-anotacao:#0f766e;color-scheme:light dark}
+@media(prefers-color-scheme:dark){:root{--bg:#0f161d;--papel:#161f28;--tinta:#e6ebf0;--suave:#8fa1b2;--linha:#26323d;--acento:#7d9bff;--c-tutorial:#7d9bff;--c-erro-solucao:#fb923c;--c-ideia:#b794f6;--c-anotacao:#4fd1c5}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tinta);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--acento)}
+:focus-visible{outline:2px solid var(--acento);outline-offset:2px}
+.app{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:100vh}
+aside{padding:20px 16px;border-right:1px solid var(--linha);position:sticky;top:0;height:100vh;overflow:auto}
+aside h2{margin:0 0 14px;font-size:1.05rem}
+aside h3{margin:20px 0 6px;font-size:.85rem;color:var(--suave);font-weight:600}
+main{padding:28px clamp(16px,4vw,56px) 80px;max-width:920px;width:100%}
+input,select,textarea{font:inherit;color:inherit;background:var(--papel);border:1px solid var(--linha);border-radius:6px;padding:8px 10px;width:100%}
+textarea{font:14px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;min-height:55vh;resize:vertical}
+.btn,button{font:inherit;cursor:pointer;border:1px solid var(--linha);background:var(--papel);color:var(--tinta);border-radius:6px;padding:7px 14px;text-decoration:none;display:inline-block}
+.btn.primario{background:var(--acento);border-color:var(--acento);color:var(--bg);font-weight:600}
+.btn.perigo{color:var(--c-erro-solucao)}
+#nova{display:block;text-align:center;margin:12px 0 14px}
+.f{display:flex;justify-content:space-between;width:100%;border:0;background:none;padding:5px 8px;text-align:left;border-radius:5px}
+.f.on{background:var(--papel);font-weight:600;box-shadow:inset 3px 0 var(--acento)}
+.f small{color:var(--suave)}
+.topo{display:flex;align-items:baseline;gap:12px}
+h1{margin:0 0 4px;font-size:1.6rem;line-height:1.2}
+.vazio{color:var(--suave)}
+.ativos{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 14px}
+.chip{padding:2px 10px;border-radius:99px;font-size:.85rem}
+.card{display:block;background:var(--papel);border:1px solid var(--linha);border-left:5px solid var(--cor,var(--linha));border-radius:6px;padding:12px 16px;margin:0 0 10px;text-decoration:none;color:inherit}
+.card:hover{border-color:var(--acento);border-left-color:var(--cor)}
+.card p{margin:4px 0 8px;color:var(--suave);font-size:.93rem}
+mark{background:color-mix(in srgb,var(--acento) 25%,transparent);color:inherit}
+.meta{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.82rem;color:var(--suave)}
+.meta .tipo{color:var(--cor);font-weight:600}
+.t-tutorial{--cor:var(--c-tutorial)}.t-erro-solucao{--cor:var(--c-erro-solucao)}.t-ideia{--cor:var(--c-ideia)}.t-anotacao{--cor:var(--c-anotacao)}
+.acoes{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 22px}
+article{font:1.08rem/1.7 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;max-width:70ch}
+article h2,article h3{font-family:system-ui,sans-serif;line-height:1.3;margin:1.8em 0 .5em}
+article img{max-width:100%;height:auto;border:1px solid var(--linha);border-radius:4px}
+article table{border-collapse:collapse;display:block;overflow-x:auto}
+article td,article th{border:1px solid var(--linha);padding:6px 10px}
+article code{font:.88em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--papel);padding:1px 5px;border-radius:4px}
+article pre{position:relative;background:var(--papel);border:1px solid var(--linha);border-radius:6px;padding:14px;overflow-x:auto;line-height:1.5}
+article pre code{background:none;padding:0}
+.copiar{position:absolute;top:6px;right:6px;padding:2px 10px;font-size:.8rem}
+.linha{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin:10px 0}
+.linha label,.campo label{font-size:.85rem;color:var(--suave);display:block;margin-bottom:2px}
+.sug{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 12px}.sug button{padding:1px 9px;font-size:.82rem}
+.abas{display:flex;gap:6px;margin:10px 0 6px}.abas .on{border-color:var(--acento);font-weight:600}
+.aviso{padding:8px 12px;border-radius:6px;background:var(--papel);border:1px solid var(--linha);margin:10px 0}
+.erro{color:var(--c-erro-solucao)}
+.hist{margin:0 0 20px;padding:0;list-style:none;font-size:.9rem;color:var(--suave)}
+/* caixas de código */
+.codigo{margin:1.3em 0;border-radius:8px;overflow:hidden;background:#0e1620;border:1px solid #243242;font-size:.95rem}
+.cod-topo{display:flex;justify-content:space-between;align-items:center;padding:4px 8px 4px 14px;background:#16222e;color:#8fa5ba;font:600 .78rem system-ui,sans-serif}
+.codigo .copiar{position:static;background:transparent;color:#b8c7d6;border-color:#33465a;padding:2px 10px;font-size:.78rem}
+.codigo pre{margin:0;padding:14px 16px;border:0;border-radius:0;background:transparent;color:#d6e2ee;line-height:1.55}
+.codigo code{background:none;color:inherit;padding:0;font-size:.92rem}
+.cm{color:#6f8499}.st{color:#a5d6a7}.fl{color:#f0c674}.cmd{color:#7fc4ff;font-weight:600}
+/* texto de instrução: títulos, passos e avisos */
+article h2{padding-left:12px;border-left:4px solid var(--cor,var(--acento));font-size:1.35rem;scroll-margin-top:16px}
+article h3{font-size:1.1rem;color:var(--suave);scroll-margin-top:16px}
+article ol{list-style:none;counter-reset:p;padding:0}
+article ol>li{counter-increment:p;position:relative;padding:2px 0 2px 46px;margin:14px 0;min-height:32px}
+article ol>li::before{content:counter(p);position:absolute;left:0;top:0;width:32px;height:32px;border-radius:50%;background:var(--cor,var(--acento));color:var(--bg);font:700 .9rem system-ui,sans-serif;display:grid;place-items:center}
+article blockquote{margin:1.2em 0;padding:8px 16px;border-left:4px solid var(--c-anotacao);background:var(--papel);border-radius:0 6px 6px 0}
+article blockquote.aviso{border-left-color:var(--c-erro-solucao)}
+article blockquote p{margin:.4em 0}
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 24px}
+.toc a{padding:2px 12px;border:1px solid var(--linha);border-radius:99px;font-size:.88rem;text-decoration:none;color:var(--tinta);background:var(--papel)}
+.meta a{color:inherit}
+/* início: árvore de conhecimento */
+.hero{margin-bottom:6px}.hero p{color:var(--suave);margin:2px 0 0}
+.arvore{width:100%;height:auto;display:block;margin:4px 0}
+.ramo{fill:none;stroke:var(--suave);stroke-linecap:round}
+.ramo.cresce{stroke-dasharray:var(--len);animation:crescer 1.2s ease-out both}
+@keyframes crescer{from{stroke-dashoffset:var(--len)}to{stroke-dashoffset:0}}
+.galho{cursor:pointer;outline:none}
+.galho:hover .ramo,.galho:focus-visible .ramo{stroke:var(--acento)}
+.no{fill:var(--papel);stroke:var(--acento);stroke-width:3}
+.galho:focus-visible .no{stroke-width:6}
+.num{font:700 12px system-ui,sans-serif;fill:var(--tinta);pointer-events:none}
+.rotulo{font:600 16px system-ui,sans-serif;fill:var(--tinta)}
+.folha{stroke:var(--bg);stroke-width:2;transition:r .15s}.folha:hover{r:10}
+.legenda{margin:6px 0 24px}.legenda i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.sec{margin:8px 0;font-size:1rem;color:var(--suave)}
+.ramos{display:none}
+@media(prefers-reduced-motion:reduce){.ramo.cresce{animation:none;stroke-dasharray:none}.folha{transition:none}}
+@media(max-width:760px){.arvore{display:none}.ramos{display:grid;gap:10px;margin-bottom:20px}}
+@media(max-width:760px){.app{display:block}aside{position:static;height:auto;border-right:0;border-bottom:1px solid var(--linha)}.linha{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+  <h2><a href="#/" style="color:inherit;text-decoration:none">Segundo cérebro</a></h2>
+  <input id="q" type="search" placeholder="Buscar em tudo" aria-label="Buscar">
+  <a id="nova" class="btn primario" href="#/nova">Nova nota</a>
+  <details id="det" open><summary>Filtros</summary><div id="filtros"></div></details>
+</aside>
+<main id="main"></main>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const api=async(u,o)=>{const r=await fetch(u,o);const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.erro||'Erro '+r.status);return j};
+const NOMES={tutorial:'Tutorial','erro-solucao':'Erro e solução',ideia:'Ideia',anotacao:'Anotação'};
+let meta={tipos:[],modelos:{},temas:[],tags:[]},filtro={q:'',tema:'',tipo:'',tag:''};
+if(matchMedia('(max-width:760px)').matches)$('#det').open=false;
+
+function filtros(){
+  const b=(k,v,qtd)=>`<button class="f ${filtro[k]===v?'on':''}" data-k="${k}" data-v="${esc(v)}"><span>${esc(NOMES[v]||v)}</span><small>${qtd??''}</small></button>`;
+  $('#filtros').innerHTML=`<h3>Temas</h3>${meta.temas.map(t=>b('tema',t.nome,t.qtd)).join('')||'<p class="vazio">Nenhum ainda</p>'}<h3>Tipos</h3>${meta.tipos.map(t=>b('tipo',t)).join('')}<h3>Tags</h3>${meta.tags.slice(0,24).map(t=>b('tag',t.nome,t.qtd)).join('')||'<p class="vazio">Nenhuma ainda</p>'}`;
+}
+$('#filtros').onclick=e=>{const el=e.target.closest('.f');if(!el)return;const{k,v}=el.dataset;filtro[k]=filtro[k]===v?'':v;irLista()};
+$('main').onclick=e=>{
+  const x=e.target.closest('[data-x]');if(x){filtro[x.dataset.x]='';irLista();return}
+  const ir=e.target.closest('[data-ir]');if(ir){e.preventDefault();document.getElementById(ir.dataset.ir)?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});return}
+  const g=e.target.closest('[data-tema]');if(g&&!e.target.closest('.folha-link')){filtro={q:'',tema:g.dataset.tema,tipo:'',tag:''};if(location.hash!=='#/notas')location.hash='#/notas';else rota()}
+};
+let tm;$('#q').oninput=e=>{clearTimeout(tm);tm=setTimeout(()=>{filtro.q=e.target.value;irLista()},180)};
+function irLista(){if(location.hash!=='#/notas')location.hash='#/notas';else rota()}
+
+const card=n=>`<a class="card t-${n.tipo}" href="#/nota/${n.id}"><strong>${esc(n.titulo)}</strong><p>${n.trecho||esc(n.resumo)}</p><div class="meta"><span class="tipo">${NOMES[n.tipo]}</span><span>${esc(n.tema)}</span>${n.tags.map(t=>`<span>#${esc(t)}</span>`).join('')}<span>${esc(n.atualizado)}</span></div></a>`;
+async function lista(){
+  const notas=await api('/api/notas?'+new URLSearchParams(Object.entries(filtro).filter(([,v])=>v)));
+  const ativos=['tema','tipo','tag'].filter(k=>filtro[k]).map(k=>`<button class="chip" data-x="${k}">${esc(NOMES[filtro[k]]||filtro[k])} ×</button>`).join('');
+  const filtrado=Object.values(filtro).some(Boolean);
+  $('main').innerHTML=`<div class="topo"><h1>${filtro.q?'Resultados':'Notas'}</h1><span class="vazio">${notas.length}</span></div><div class="ativos">${ativos}</div>`+
+    (notas.length?notas.map(card).join(''):`<div class="aviso">${filtrado?'Nada encontrado com esses filtros.':'Nenhuma nota ainda. Crie a primeira ou importe um docx.'} <a href="#/nova">Nova nota</a></div>`);
+}
+
+function copiar(txt){return navigator.clipboard?.writeText(txt).catch(()=>fallback(txt))||fallback(txt)}
+function fallback(t){const a=document.createElement('textarea');a.value=t;document.body.append(a);a.select();document.execCommand('copy');a.remove()}
+document.addEventListener('click',async e=>{const b=e.target.closest('.copiar');if(!b)return;await copiar(b.closest('.codigo').querySelector('code').innerText);b.textContent='Copiado';setTimeout(()=>b.textContent='Copiar',1500)});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches?.('.galho'))e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}))});
+async function ver(tema,slug){
+  const n=await api(`/api/notas/${tema}/${slug}`);
+  const toc=n.toc.length>=3?`<nav class="toc" aria-label="Nesta nota">${n.toc.map(t=>`<a href="#/nota/${n.id}" data-ir="${esc(t.id)}">${esc(t.texto)}</a>`).join('')}</nav>`:'';
+  $('main').innerHTML=`<div class="meta t-${n.tipo}"><span class="tipo">${NOMES[n.tipo]}</span><a href="#/notas" data-tema="${esc(n.tema)}">${esc(n.tema)}</a>${n.tags.map(t=>`<span>#${esc(t)}</span>`).join('')}<span>Atualizada em ${esc(n.atualizado)}</span></div>
+  <h1>${esc(n.titulo)}</h1>
+  <div class="acoes"><a class="btn" href="#/editar/${n.id}">Editar</a><button id="hist">Histórico</button><button id="del" class="perigo btn">Excluir</button></div>
+  <ul id="lh" class="hist" hidden></ul>${toc}<article class="t-${n.tipo}">${n.html}</article>`;
+  $('#hist').onclick=async()=>{const h=await api(`/api/historico/${n.id}`);const u=$('#lh');u.hidden=!u.hidden;u.innerHTML=h.length?h.map(c=>`<li>${esc(c.data)} ${esc(c.msg)} (${c.hash})</li>`).join(''):'<li>Sem histórico ainda.</li>'};
+  $('#del').onclick=async()=>{if(confirm(`Excluir "${n.titulo}"? O histórico continua no Git.`)){await api(`/api/notas/${n.id}`,{method:'DELETE'});location.hash='#/'}};
+}
+
+const COR={tutorial:'var(--c-tutorial)','erro-solucao':'var(--c-erro-solucao)',ideia:'var(--c-ideia)',anotacao:'var(--c-anotacao)'};
+const bez=(p,t)=>{const u=1-t;return[u*u*u*p[0]+3*u*u*t*p[2]+3*u*t*t*p[4]+t*t*t*p[6],u*u*u*p[1]+3*u*u*t*p[3]+3*u*t*t*p[5]+t*t*t*p[7]]};
+async function inicio(){
+  const notas=await api('/api/notas'),temas=meta.temas;
+  const hero=`<div class="hero"><h1>Seu conhecimento</h1><p>${notas.length} notas em ${temas.length} áreas</p></div>`;
+  if(!temas.length){$('main').innerHTML=hero+`<div class="aviso">Nada plantado ainda. <a href="#/nova">Crie a primeira nota</a> ou importe um docx.</div>`;return}
+  const n=temas.length,niv=Math.ceil(n/2),H=330+niv*80,ty=100,passo=(H-80-ty-90)/niv;
+  let ramos='';
+  temas.forEach((t,i)=>{
+    const lado=i%2?1:-1,sy=H-80-Math.floor(i/2)*passo,ex=450+lado*(200+(i*37)%80),ey=Math.max(70,sy-110-(i*13)%40);
+    const p=[450,sy,450+lado*70,sy-6,450+lado*140,sy-55,ex,ey],r=13+Math.min(t.qtd,8);
+    const folhas=notas.filter(x=>x.tema===t.nome).slice(0,9).map((x,k,a)=>{const[fx,fy]=bez(p,.3+.62*k/Math.max(a.length-1,1)),s=k%2?-1:1;
+      return `<a class="folha-link" href="#/nota/${x.id}"><circle class="folha" cx="${(fx+s*7).toFixed(1)}" cy="${(fy-s*13).toFixed(1)}" r="7" fill="${COR[x.tipo]}"><title>${esc(x.titulo)}</title></circle></a>`}).join('');
+    ramos+=`<g class="galho" data-tema="${esc(t.nome)}" tabindex="0" role="link" aria-label="${esc(t.nome)}, ${t.qtd} notas"><path class="ramo cresce" d="M${p[0]},${p[1]} C${p[2]},${p[3]} ${p[4]},${p[5]} ${p[6]},${p[7]}" stroke-width="5"/><circle class="no" cx="${ex}" cy="${ey}" r="${r}"/><text class="num" x="${ex}" y="${ey+4}" text-anchor="middle">${t.qtd}</text><text class="rotulo" x="${ex}" y="${ey-r-9}" text-anchor="middle">${esc(t.nome)}</text>${folhas}</g>`;
+  });
+  $('main').innerHTML=hero+`<svg class="arvore" viewBox="0 0 900 ${H}" role="group" aria-label="Árvore de conhecimento"><path class="ramo cresce" d="M450,${H} C438,${H-130} 464,${ty+130} 450,${ty}" stroke-width="12"/>${ramos}</svg>
+  <div class="ramos">${temas.map(t=>`<a class="card" href="#/notas" data-tema="${esc(t.nome)}"><strong>${esc(t.nome)}</strong><div class="meta"><span>${t.qtd} notas</span></div></a>`).join('')}</div>
+  <div class="meta legenda">${meta.tipos.map(t=>`<span><i style="background:${COR[t]}"></i>${NOMES[t]}</span>`).join('')}</div>
+  <h3 class="sec">Recentes</h3>${notas.slice(0,4).map(card).join('')}`;
+  document.querySelectorAll('.ramo.cresce').forEach(p=>p.style.setProperty('--len',Math.ceil(p.getTotalLength())));
+}
+
+function editor(n){
+  const novo=!n;n=n||{titulo:'',tema:filtro.tema,tipo:'tutorial',tags:[],corpo:meta.modelos.tutorial};
+  let modelo=novo?meta.modelos[n.tipo]:null;
+  $('main').innerHTML=`<h1>${novo?'Nova nota':'Editar nota'}</h1><div id="msg"></div>
+  <div class="campo"><label for="ft">Título</label><input id="ft" value="${esc(n.titulo)}"></div>
+  <div class="linha"><div><label for="fm">Tema (pasta)</label><input id="fm" list="temas" value="${esc(n.tema)}" placeholder="redes, linux, virtualizacao"><datalist id="temas">${meta.temas.map(t=>`<option value="${esc(t.nome)}">`).join('')}</datalist></div>
+  <div><label for="fp">Tipo</label><select id="fp">${meta.tipos.map(t=>`<option value="${t}" ${t===n.tipo?'selected':''}>${NOMES[t]}</option>`).join('')}</select></div>
+  <div><label for="fg">Tags (separe por vírgula)</label><input id="fg" value="${esc(n.tags.join(', '))}"></div></div>
+  <div class="sug">${meta.tags.slice(0,16).map(t=>`<button type="button" data-t="${esc(t.nome)}">#${esc(t.nome)}</button>`).join('')}</div>
+  <div class="abas"><button id="ae" class="on">Escrever</button><button id="av">Prévia</button><button id="an" title="Detecta códigos, ajusta títulos e remove sobras do Word">Arrumar formatação</button>${novo?'<label class="btn" style="margin-left:auto">Importar docx<input id="fu" type="file" accept=".docx,.md,.txt" hidden></label>':''}</div>
+  <textarea id="fc" aria-label="Conteúdo em Markdown">${esc(n.corpo)}</textarea><article id="pv" hidden></article>
+  <div class="acoes"><button id="sv" class="btn primario">Salvar</button><a class="btn" href="#/${novo?'':'nota/'+n.id}">Cancelar</a></div>`;
+  const msg=(t,c='erro')=>$('#msg').innerHTML=t?`<p class="aviso ${c}">${esc(t)}</p>`:'';
+  $('.sug').onclick=e=>{const t=e.target.dataset.t;if(!t)return;const i=$('#fg'),l=i.value.split(',').map(s=>s.trim()).filter(Boolean);if(!l.includes(t))l.push(t);i.value=l.join(', ')};
+  $('#fp').onchange=e=>{const c=$('#fc');if(c.value.trim()===(modelo||'').trim()){modelo=meta.modelos[e.target.value];c.value=modelo}};
+  $('#ae').onclick=()=>{$('#fc').hidden=false;$('#pv').hidden=true;$('#ae').classList.add('on');$('#av').classList.remove('on')};
+  $('#av').onclick=async()=>{const r=await api('/api/preview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({corpo:$('#fc').value})});$('#pv').innerHTML=r.html;$('#fc').hidden=true;$('#pv').hidden=false;$('#av').classList.add('on');$('#ae').classList.remove('on')};
+  $('#an').onclick=async()=>{try{const r=await api('/api/normalizar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({corpo:$('#fc').value})});$('#fc').value=r.corpo;msg('Formatação ajustada. Confira na prévia.','')}catch(x){msg(x.message)}};
+  if($('#fu'))$('#fu').onchange=async e=>{const f=e.target.files[0];if(!f)return;const fd=new FormData();fd.append('arquivo',f);
+    try{const r=await api('/api/upload',{method:'POST',body:fd});if(!$('#ft').value)$('#ft').value=r.titulo;$('#fc').value=r.corpo;modelo=null;msg('Importado. Revise o texto, escolha tema, tipo e tags e salve.','')}catch(x){msg(x.message)}};
+  const salvar=async()=>{try{const r=await api('/api/notas',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:n.id,titulo:$('#ft').value,tema:$('#fm').value,tipo:$('#fp').value,tags:$('#fg').value,corpo:$('#fc').value})});location.hash='#/nota/'+r.id}catch(x){msg(x.message)}};
+  $('#sv').onclick=salvar;
+  $('main').onkeydown=e=>{if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();salvar()}};
+}
+
+async function rota(){
+  const[,r,a,b]=location.hash.split('/');
+  $('main').onkeydown=null;
+  try{
+    meta=await api('/api/meta');filtros();
+    if(r==='nota')await ver(a,b);
+    else if(r==='nova')editor(null);
+    else if(r==='editar')editor(await api(`/api/notas/${a}/${b}`));
+    else if(r==='notas')await lista();else await inicio();
+  }catch(e){$('main').innerHTML=`<p class="erro">${esc(e.message)}</p><a href="#/">Voltar às notas</a>`}
+  window.scrollTo(0,0);
+}
+addEventListener('hashchange',rota);rota();
+</script>
+</body>
+</html>

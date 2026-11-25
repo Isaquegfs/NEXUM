@@ -1,0 +1,22 @@
+{
+  "name": "segundo-cerebro",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "gray-matter": "^4.0.3",
+    "mammoth": "^1.8.0",
+    "markdown-it": "^14.1.0",
+    "multer": "^2.0.2",
+    "simple-git": "^3.25.0",
+    "turndown": "^7.2.0",
+    "turndown-plugin-gfm": "^1.0.2"
+  }
+}
