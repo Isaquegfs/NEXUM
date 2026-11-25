@@ -33,7 +33,7 @@ const dia = d => (d instanceof Date ? d.toISOString().slice(0, 10) : String(d ||
 const limpaTags = t => [...new Set((Array.isArray(t) ? t : String(t || '').split(',')).map(slug).filter(Boolean))];
 
 // Git: histórico de cada nota
-const git = simpleGit(ROOT, { config: ['user.name=Segundo Cérebro', 'user.email=cerebro@local'] });
+const git = simpleGit(ROOT, { config: ['user.name=NEXUM', 'user.email=cerebro@local'] });
 async function commit(msg) {
   try {
     if (!fs.existsSync(path.join(ROOT, '.git'))) await git.init();
@@ -257,7 +257,7 @@ app.use((req, res, next) => {
   const cred = h.startsWith('Basic ') ? Buffer.from(h.slice(6), 'base64').toString() : '';
   const a = Buffer.from(cred.slice(cred.indexOf(':') + 1)), b = Buffer.from(SENHA);
   if (a.length === b.length && crypto.timingSafeEqual(a, b)) return next();
-  res.set('WWW-Authenticate', 'Basic realm="Segundo Cérebro"').status(401).send('Autenticação necessária');
+  res.set('WWW-Authenticate', 'Basic realm="NEXUM"').status(401).send('Autenticação necessária');
 });
 app.use(express.json({ limit: '5mb' }));
 app.use('/midia', express.static(MIDIA));
@@ -336,4 +336,4 @@ app.post('/api/upload', up.single('arquivo'), async (req, res) => {
 
 reindexar();
 await commit('Início');
-app.listen(PORT, '0.0.0.0', () => console.log(`Segundo cérebro em http://localhost:${PORT}  (${cache.length} notas)`));
+app.listen(PORT, '0.0.0.0', () => console.log(`NEXUM em http://localhost:${PORT}  (${cache.length} notas)`));

@@ -1,4 +1,4 @@
-# Segundo cérebro
+# NEXUM
 
 Notas em Markdown, uma pasta por tema, com histórico em Git e busca instantânea.
 Funciona no PC e no celular pelo navegador.
