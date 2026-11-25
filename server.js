@@ -20,9 +20,9 @@ fs.mkdirSync(ROOT, { recursive: true });
 
 const TIPOS = ['tutorial', 'erro-solucao', 'ideia', 'anotacao'];
 const MODELOS = {
-  tutorial: '## Objetivo\n\n## Pré-requisitos\n\n## Passos\n\n## Validação\n\n## Problemas comuns\n',
-  'erro-solucao': '## Sintoma\n\n## Causa\n\n## Solução\n\n```bash\n\n```\n\n## Como verificar\n',
-  ideia: '## Ideia\n\n## Por que vale a pena\n\n## Próximos passos\n',
+  tutorial: '// Objetivo\n\n// Pré-requisitos\n\n// Passos\n\n# comando aqui\n\n// Validação\n\n// Problemas comuns\n',
+  'erro-solucao': '// Sintoma\n\n// Causa\n\n// Solução\n\n# comando aqui\n\n// Como verificar\n',
+  ideia: '// Ideia\n\n// Por que vale a pena\n\n// Próximos passos\n',
   anotacao: ''
 };
 
@@ -97,16 +97,12 @@ const conta = arr => Object.entries(arr.reduce((m, k) => ((m[k] = (m[k] || 0) + 
 const md = new MarkdownIt({ html: false, linkify: true });
 
 // ---------- Renderização própria: caixas de código, títulos com âncora, passos e avisos ----------
-const ROTULOS = { bash: 'Terminal', sh: 'Terminal', shell: 'Terminal', console: 'Terminal', powershell: 'PowerShell', ps1: 'PowerShell', yaml: 'YAML', yml: 'YAML', json: 'JSON', ini: 'Configuração', conf: 'Configuração', python: 'Python', js: 'JavaScript', javascript: 'JavaScript', sql: 'SQL', nginx: 'Nginx' };
-const colorir = txt => esc(txt).split('\n').map(l => {
-  if (/^\s*(#|\/\/|;)/.test(l)) return `<span class="cm">${l}</span>`;
-  return l.replace(/(&quot;.*?&quot;|&#39;.*?&#39;)/g, '<span class="st">$1</span>')
-    .replace(/(^|\s)(--?[A-Za-z][\w-]*)/g, '$1<span class="fl">$2</span>')
-    .replace(/^(\s*)((?:sudo|\$)\s+)?([\w./-]+)/, (m, a, b, c) => `${a}${b || ''}<span class="cmd">${c}</span>`);
-}).join('\n');
+const PROMPT = { bash: '$', sh: '$', shell: '$', console: '$', powershell: 'PS>', ps1: 'PS>' };
 md.renderer.rules.fence = (tokens, i) => {
-  const t = tokens[i], lang = (t.info || '').trim().split(/\s+/)[0].toLowerCase();
-  return `<div class="codigo"><div class="cod-topo"><span>${esc(ROTULOS[lang] || lang || 'Código')}</span><button type="button" class="copiar">Copiar</button></div><pre><code>${colorir(t.content.replace(/\n$/, ''))}</code></pre></div>\n`;
+  const t = tokens[i], lang = (t.info || '').trim().split(/\s+/)[0].toLowerCase(), p = PROMPT[lang] || '';
+  const txt = t.content.replace(/\n$/, '');
+  const linhas = txt.split('\n').map(l => `<span class="ln" data-p="${p}">${esc(l)}</span>`).join('');
+  return `<div class="codigo${p ? ' prompt' : ''}" data-raw="${esc(txt)}"><button type="button" class="copiar" title="Copiar">Copiar</button><pre><code>${linhas}</code></pre></div>\n`;
 };
 md.renderer.rules.heading_open = (tokens, i, o, e, self) => {
   if (['h2', 'h3'].includes(tokens[i].tag)) tokens[i].attrSet('id', slug(tokens[i + 1].content) || 'secao');
@@ -120,44 +116,64 @@ md.renderer.rules.ordered_list_open = (tokens, i, o, e, self) => {
 const callouts = h => h
   .replace(/<blockquote>(\s*<p><strong>(?:aten[çc][ãa]o|cuidado|aviso|importante|perigo))/gi, '<blockquote class="aviso">$1')
   .replace(/<blockquote>(\s*<p><strong>(?:dica|obs|nota|observa[çc][ãa]o))/gi, '<blockquote class="nota">$1');
-const renderMd = s => callouts(md.render(String(s || '')));
-const sumario = corpo => { const t = md.parse(String(corpo || ''), {}); return t.map((k, i) => k.type === 'heading_open' && k.tag === 'h2' ? { id: slug(t[i + 1].content) || 'secao', texto: t[i + 1].content } : null).filter(Boolean); };
+const renderMd = s => callouts(md.render(paraMarkdown(s)));
+const estatisticas = corpo => {
+  const pilha = []; let passos = 0, blocos = 0;
+  for (const k of md.parse(paraMarkdown(corpo), {})) {
+    if (k.type === 'fence') blocos++;
+    else if (k.type === 'ordered_list_open' || k.type === 'bullet_list_open') pilha.push(k.type);
+    else if (k.type === 'ordered_list_close' || k.type === 'bullet_list_close') pilha.pop();
+    else if (k.type === 'list_item_open' && pilha.length === 1 && pilha[0] === 'ordered_list_open') passos++;
+  }
+  return { passos, blocos, minutos: Math.max(1, Math.round(String(corpo || '').split(/\s+/).length / 200)) };
+};
+const sumario = corpo => { const t = md.parse(paraMarkdown(corpo), {}); return t.map((k, i) => k.type === 'heading_open' && k.tag === 'h2' ? { id: slug(t[i + 1].content) || 'secao', texto: t[i + 1].content } : null).filter(Boolean); };
 
 // ---------- Normalização na importação: dá o padrão do sistema ao texto vindo do Word ----------
 // <<normalizar
 const FORTE = /^(\$ |sudo |apt(-get)? |dpkg |systemctl |journalctl |service |cd |ls |cat |nano |vim? |chmod |chown |mkdir |rm |cp |mv |tar |curl |wget |ssh |scp |rsync |ip |ping |nft |iptables |ufw |mount |umount |fdisk |lsblk |blkid |df |du |free |kill |grep |sed |awk |echo |export |source |docker |git |npm |node |python3? |pip3? |qm |pct |pvesm |pvecm |pveam |zfs |zpool |proxmox-\S+ |wg |wg-quick |openssl |hostnamectl |timedatectl |crontab |\.\/|(Get|Set|New|Remove|Import|Start|Stop|Restart|Invoke|Test|Enable|Disable|Add|Install)-\w+|ipconfig|netsh |gpupdate|nslookup|tracert|robocopy|winget |choco |msiexec |wsl )/;
 const FRACO = /^(\[[\w .-]+\]|[A-Za-z][\w.-]*\s*=\s*\S.*|\/[\w.\-]+(\/[\w.\-]*)+|[A-Z]:\\\S.*)$/;
 const desesc = s => s.replace(/\\([\\`*_{}\[\]()#+\-.!>~|<])/g, '$1');
-function tipoLinha(l) {
+function tipoLinha(l, editor) {
   const r = desesc(l).trim();
   if (!r) return 'b';
+  if (/^\s*\\#/.test(l) || (editor && /^\s*#(\s|$)/.test(l))) return 'm';
+  const mk = l.match(/^\s*#\s+(.+)$/);
+  if (mk && (FORTE.test(mk[1]) || FRACO.test(mk[1]))) return 'm';
   if (/^([-*+]|\d+[.)])\s/.test(l.trim())) return 'p';
   const n = r.split(/\s+/).length;
   if (FORTE.test(r) && n <= 30 && !(n > 12 && /[a-zà-ú]\.$/i.test(r))) return 'f';
   return FRACO.test(r) ? 'w' : 'p';
 }
-const linguagem = (t, temForte) => /(^|\n)\s*((Get|Set|New|Remove|Import|Start|Stop|Restart|Invoke|Test|Enable|Disable|Add|Install)-\w+|\$\w+\s*=)|[A-Z]:\\|ipconfig|netsh /.test(t) ? 'powershell' : temForte ? 'bash' : 'ini';
-function normalizar(texto, titulo) {
+const PS = /(^|\n)\s*((Get|Set|New|Remove|Import|Start|Stop|Restart|Invoke|Test|Enable|Disable|Add|Install)-\w+|\$\w+\s*=)|[A-Z]:\\|ipconfig|netsh /;
+const linguagem = t => {
+  if (PS.test(t)) return 'powershell';
+  const ls = t.split('\n').filter(x => x.trim());
+  if (ls.some(x => FORTE.test(x.trim()))) return 'bash';
+  if (ls.every(x => FRACO.test(x.trim()))) return 'ini';
+  return ls.every(x => /^\s*([\w.-]+:(\s|$)|-\s|[{}\[\]])/.test(x)) ? 'yaml' : 'bash';
+};
+function normalizar(texto, titulo, editor = false) {
   let linhas = String(texto || '').replace(/\r/g, '').split('\n').map(l => l.replace(/\s+$/, ''));
   const i0 = linhas.findIndex(l => l.trim());
-  if (i0 >= 0) {
+  if (!editor && i0 >= 0) {
     const h1 = linhas[i0].match(/^#\s+(.+)$/), qtdH1 = linhas.filter(l => /^#\s/.test(l)).length;
-    const txt = desesc((h1 ? h1[1] : linhas[i0]).replace(/^#+\s*|\*\*/g, '')).trim();
+    const txt = desesc((h1 ? h1[1] : linhas[i0]).replace(/^#+\s*|^\/\/+\s*|\*\*/g, '')).trim();
     if ((h1 && qtdH1 === 1) || norm(txt) === norm(titulo || '')) { if (h1 && qtdH1 === 1) titulo = txt; linhas.splice(i0, 1); }
   }
   let fence = false;
-  const marca = linhas.map(l => { if (/^\s*```/.test(l)) { fence = !fence; return 'x'; } return fence ? 'x' : tipoLinha(l); });
-  const cod = m => m === 'f' || m === 'w';
+  const marca = linhas.map(l => { if (/^\s*```/.test(l)) { fence = !fence; return 'x'; } return fence ? 'x' : tipoLinha(l, editor); });
+  const cod = m => m === 'f' || m === 'w' || m === 'm';
   const out = [];
   for (let i = 0; i < linhas.length;) {
     if (cod(marca[i])) {
       let j = i, ult = i;
-      while (j < linhas.length && (cod(marca[j]) || (marca[j] === 'b' && marca[j + 1] === marca[ult]))) { if (marca[j] !== 'b') ult = j; j++; }
-      const ms = marca.slice(i, ult + 1), nf = ms.filter(x => x === 'f').length, nw = ms.filter(x => x === 'w').length;
+      while (j < linhas.length && (cod(marca[j]) || (!editor && marca[j] === 'b' && marca[j + 1] === marca[ult]))) { if (marca[j] !== 'b') ult = j; j++; }
+      const ms = marca.slice(i, ult + 1), nf = ms.filter(x => x === 'f' || x === 'm').length, nw = ms.filter(x => x === 'w').length;
       if (nf >= 1 || nw >= 2) {
         const ind = (linhas[i].match(/^ +/) || [''])[0];
-        const txt = linhas.slice(i, ult + 1).map(l => desesc(l.startsWith(ind) ? l.slice(ind.length) : l)).join('\n');
-        out.push('', ind + '```' + linguagem(txt, nf > 0), ...txt.split('\n').map(x => ind + x), ind + '```', '');
+        const txt = linhas.slice(i, ult + 1).map((l, k) => { const d = desesc(l.startsWith(ind) ? l.slice(ind.length) : l); return ms[k] === 'm' ? d.replace(/^\s*#\s?/, '') : d; }).join('\n');
+        out.push('', ind + '```' + linguagem(txt), ...txt.split('\n').map(x => ind + x), ind + '```', '');
         i = ult + 1; continue;
       }
     }
@@ -172,13 +188,46 @@ function normalizar(texto, titulo) {
     if (/^\s*```/.test(l)) { fence = !fence; return l; }
     if (fence) return l;
     let m;
+    if ((m = l.match(/^\s*(\/{2,4})\s+(.+)$/))) return '#'.repeat(m[1].length) + ' ' + desesc(m[2]).replace(/^\*\*(.*)\*\*$/, '$1');
     if ((m = l.match(/^(#{1,6})\s+(.*)$/))) return '#'.repeat(Math.min(4, Math.max(2, m[1].length + desloc))) + ' ' + desesc(m[2]).replace(/^\*\*(.*)\*\*$/, '$1');
     if ((m = l.match(/^\*\*([^*]{3,80}?)\*\*:?$/)) && !/[.!?]$/.test(m[1])) return '#'.repeat(nivelNegrito) + ' ' + desesc(m[1]).replace(/:$/, '');
     l = l.replace(/^(\s*)(\d+)\\\.\s/, '$1$2. ').replace(/^(\s*)\\([-*+])\s/, '$1$2 ');
     if ((m = l.match(/^(?:\*\*)?(Obs\.?|Observação|Nota|Atenção|Cuidado|Aviso|Importante|Dica|Perigo)(?:\*\*)?\s*[:\-–]\s*(?:\*\*)?(.+)$/i))) return `> **${m[1].replace(/\.$/, '')}:** ${m[2]}`;
     return l;
   });
-  return { titulo, corpo: fim.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n' };
+  return { titulo, corpo: paraNotacao(fim.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n') };
+}
+// Notação do sistema: "// Título" (2 a 4 barras) e "# código" (linhas seguidas formam uma caixa)
+function paraMarkdown(texto) {
+  const ls = String(texto || '').replace(/\r/g, '').split('\n'), out = [], marca = /^(\s*)#(?: (.*))?$/;
+  let fence = false;
+  for (let i = 0; i < ls.length; i++) {
+    const l = ls[i];
+    if (/^\s*```/.test(l)) { fence = !fence; out.push(l); continue; }
+    if (fence) { out.push(l); continue; }
+    let m = l.match(/^\s*(\/{2,4})\s+(.+)$/);
+    if (m) { out.push('#'.repeat(m[1].length) + ' ' + m[2]); continue; }
+    if ((m = l.match(marca))) {
+      const ind = m[1], bloco = [m[2] ?? ''];
+      for (let n; i + 1 < ls.length && (n = ls[i + 1].match(marca)) && n[1] === ind; i++) bloco.push(n[2] ?? '');
+      out.push(ind + '```' + linguagem(bloco.join('\n')), ...bloco.map(x => ind + x), ind + '```');
+      continue;
+    }
+    out.push(l);
+  }
+  return out.join('\n');
+}
+function paraNotacao(texto) {
+  let fence = false, ind = '';
+  const out = [];
+  for (const l of String(texto || '').split('\n')) {
+    const f = l.match(/^(\s*)```/);
+    if (f) { fence = !fence; if (fence) ind = f[1]; continue; }
+    if (fence) { const c = l.startsWith(ind) ? l.slice(ind.length) : l; out.push(ind + (c.trim() ? '# ' + c : '#')); continue; }
+    const h = l.match(/^(#{2,6})\s+(.*)$/);
+    out.push(h ? '/'.repeat(Math.min(4, h[1].length)) + ' ' + h[2] : l);
+  }
+  return out.join('\n');
 }
 // normalizar>>
 
@@ -192,7 +241,10 @@ const des = s => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g
 function prepararHtml(html) {
   html = html.replace(/<table>\s*(?:<tbody>)?\s*<tr>\s*<td[^>]*>([\s\S]*?)<\/td>\s*<\/tr>\s*(?:<\/tbody>)?\s*<\/table>/g, (m, inner) => {
     const txt = inner.replace(/<\/p>\s*<p>/g, '\n').replace(/<br\s*\/?>/g, '\n').replace(/<[^>]+>/g, '');
-    return des(txt).split('\n').some(l => FORTE.test(l.trim())) ? `<pre><code>${txt}</code></pre>` : `<blockquote>${inner}</blockquote>`;
+    const ls = des(txt).split('\n').filter(l => l.trim());
+    if (!ls.some(l => FORTE.test(l.trim().replace(/^#\s?/, '')) || /^#\s/.test(l.trim()))) return `<blockquote>${inner}</blockquote>`;
+    const limpo = ls.every(l => /^\s*#/.test(l)) ? txt.split('\n').map(l => l.replace(/^\s*#\s?/, '')).join('\n') : txt;
+    return `<pre><code>${limpo}</code></pre>`;
   });
   return html.replace(/<pre><code>[\s\S]*?<\/code><\/pre>/g, m => m.replace(/<br\s*\/?>/g, '\n'));
 }
@@ -219,10 +271,10 @@ app.get('/api/notas/:tema/:slug', (req, res) => {
   const n = achar(req.params.tema, req.params.slug);
   if (!n) return res.status(404).json({ erro: 'Nota não encontrada.' });
   const { _t, _g, _c, ...r } = n;
-  res.json({ ...r, html: renderMd(n.corpo), toc: sumario(n.corpo) });
+  res.json({ ...r, html: renderMd(n.corpo), toc: sumario(n.corpo), stats: estatisticas(n.corpo), notacao: paraNotacao(n.corpo) });
 });
 app.post('/api/preview', (req, res) => res.json({ html: renderMd(req.body.corpo) }));
-app.post('/api/normalizar', (req, res) => res.json(normalizar(req.body.corpo, '')));
+app.post('/api/normalizar', (req, res) => res.json(normalizar(req.body.corpo, '', true)));
 
 app.put('/api/notas', async (req, res) => {
   const { id, titulo, tema, tipo, tags, corpo } = req.body;
@@ -275,7 +327,8 @@ app.post('/api/upload', up.single('arquivo'), async (req, res) => {
   try {
     let corpo;
     if (ext === '.docx') corpo = td.turndown(prepararHtml((await mammoth.convertToHtml({ buffer: req.file.buffer }, { convertImage: imagens, transformDocument: marcaCodigo, styleMap: ["p[style-name='Codigo'] => pre > code:separator('\\n')"] })).value));
-    else if (ext === '.md' || ext === '.txt') corpo = req.file.buffer.toString('utf8');
+    else if (ext === '.md') corpo = req.file.buffer.toString('utf8');
+    else if (ext === '.txt') corpo = req.file.buffer.toString('utf8').replace(/^(\s*)#/gm, '$1\\#');
     else return res.status(400).json({ erro: 'Formato não suportado. Envie .docx, .md ou .txt.' });
     res.json(normalizar(corpo, path.basename(original, ext)));
   } catch (e) { res.status(500).json({ erro: 'Não foi possível converter o arquivo: ' + e.message }); }

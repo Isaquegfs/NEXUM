@@ -36,9 +36,25 @@ o botão Copiar usa um método alternativo, mas funciona. Não exponha direto na
 
 Deploy (serviço systemd, Nginx, PWA) e, por último, a classificação automática.
 
+## Formato das notas
+
+O texto da nota usa duas marcas, no editor e nos arquivos:
+
+- `// Título` é título de seção (`///` subseção, `////` item).
+- `#` no começo da linha é código. Linhas seguidas formam uma caixa no estilo de prompt.
+
+O resto é Markdown comum (negrito, listas, numeração em passos, tabelas, imagens, `Atenção:` e `Dica:`).
+Notas antigas com `###` e blocos de código em Markdown continuam abrindo, e o editor as mostra já
+convertidas para esse formato.
+
 ## Importação do Word
 
-Ao importar um docx, o sistema aplica o padrão próprio: comandos viram caixas de código (por fonte
-monoespaçada, caixas de uma célula ou reconhecimento de comandos), os títulos são reajustados,
-"Atenção:" e "Dica:" viram avisos e a numeração vira passos. O botão "Arrumar formatação" faz o
-mesmo em notas já salvas.
+Ao importar um docx, `// Título` e `#` seguem a mesma regra. Também são reconhecidos títulos de estilo
+do Word, fonte monoespaçada, caixas de uma célula e comandos comuns. O botão "Arrumar formatação"
+no editor aplica tudo isso ao texto que você colar ou escrever.
+
+## Início
+
+Mapa de conexões: cada área é um nó ligado ao núcleo, e duas áreas se ligam quando compartilham tags.
+Clique numa área para focar nela e ver suas notas e conexões. Há também anotação rápida (vai para
+a área `caixa-de-entrada`) e números do acervo. Atalho `/` foca a busca.
