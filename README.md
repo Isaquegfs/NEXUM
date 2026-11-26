@@ -59,6 +59,10 @@ Além da pasta (tema), uma nota pode ter uma **subpasta** opcional: `linux` com 
 No mapa, a subpasta aparece como uma cápsula tracejada ligada à pasta, e as notas saem dela. A subpasta é
 gravada no cabeçalho da nota (`sub`); o arquivo continua em `notas/<tema>/`.
 
+No mapa há **dois níveis de zoom**: clicar na pasta aproxima a pasta, e clicar na cápsula da subpasta aproxima
+só aquela subpasta, com as demais esmaecidas. O botão × (ou o nome da pasta no painel) sobe um nível por vez,
+e clicar no núcleo volta à visão geral. O botão "Abrir subpasta" no painel abre a lista filtrada.
+
 ## Modos de acesso: editor e somente leitura
 
 Um único processo atende duas portas:
