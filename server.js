@@ -12,16 +12,19 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
+const PORT_VIEW = process.env.PORT_VIEW === undefined ? 3001 : Number(process.env.PORT_VIEW);
 const SENHA = process.env.SENHA || '';
+const SENHA_VIEW = process.env.SENHA_VIEW || '';
 const ROOT = path.resolve(process.env.NOTAS_DIR || path.join(DIR, 'notas'));
 const MIDIA = path.join(ROOT, '_midia');
 fs.mkdirSync(ROOT, { recursive: true });
 
-const TIPOS = ['tutorial', 'erro-solucao', 'ideia', 'anotacao'];
+const TIPOS = ['tutorial', 'erro-solucao', 'script', 'ideia', 'anotacao'];
 const MODELOS = {
   tutorial: '// Objetivo\n\n// Pré-requisitos\n\n// Passos\n\n# comando aqui\n\n// Validação\n\n// Problemas comuns\n',
   'erro-solucao': '// Sintoma\n\n// Causa\n\n// Solução\n\n# comando aqui\n\n// Como verificar\n',
+  script: '// O que faz\n\n// Requisitos\n\n// Como executar\n\n# ./script.sh\n\n// Código do script\n\n# comando aqui\n',
   ideia: '// Ideia\n\n// Por que vale a pena\n\n// Próximos passos\n',
   anotacao: ''
 };
@@ -54,17 +57,34 @@ function lerTodas() {
       out.push({
         id: `${t.name}/${nome}`, tema: t.name, titulo: data.titulo || nome,
         tipo: TIPOS.includes(data.tipo) ? data.tipo : 'anotacao',
-        tags: [].concat(data.tags || []).map(String),
+        tags: [].concat(data.tags || []).map(String), liga: [].concat(data.liga || []).map(String), sub: slug(data.sub || ''),
         criado: dia(data.criado), atualizado: dia(data.atualizado), corpo: content,
-        _t: norm(data.titulo || nome), _g: norm([].concat(data.tags || []).join(' ')), _c: norm(content),
+        _t: norm(data.titulo || nome), _g: norm([].concat(data.tags || [], data.sub || '').join(' ')), _c: norm(content),
         resumo: content.replace(/```[\s\S]*?```/g, '').replace(/[#>*`_\[\]!]/g, '').replace(/\s+/g, ' ').trim().slice(0, 140)
       });
     }
   }
+  const ids = new Set(out.map(n => n.id));
+  out.forEach(n => { n.liga = n.liga.filter(x => ids.has(x) && x !== n.id); });
   return out;
 }
 let cache = [];
 const reindexar = () => { cache = lerTodas(); };
+// <<ligas
+// Ligações ficam gravadas nas duas notas (campo "liga" no cabeçalho) e são mantidas em par
+const lerFm = id => { const f = matter(fs.readFileSync(path.join(ROOT, id + '.md'), 'utf8')); return { data: { ...f.data }, content: f.content }; };
+function gravarLiga(id, lista) {
+  const f = lerFm(id);
+  if (lista.length) f.data.liga = lista; else delete f.data.liga;
+  fs.writeFileSync(path.join(ROOT, id + '.md'), matter.stringify(f.content, f.data));
+}
+function definirLigas(id, nova, antiga) {
+  antiga = antiga ?? [].concat(lerFm(id).data.liga || []);
+  gravarLiga(id, nova);
+  for (const x of nova.filter(y => !antiga.includes(y))) { const l = [].concat(lerFm(x).data.liga || []); if (!l.includes(id)) gravarLiga(x, [...l, id]); }
+  for (const x of antiga.filter(y => !nova.includes(y))) { if (fs.existsSync(path.join(ROOT, x + '.md'))) gravarLiga(x, [].concat(lerFm(x).data.liga || []).filter(y => y !== id)); }
+}
+// ligas>>
 function trecho(n, termos) {
   const pos = termos.map(t => n._c.indexOf(t)).filter(x => x >= 0).sort((x, y) => x - y);
   const ini = Math.max(0, (pos[0] ?? 0) - 50);
@@ -79,7 +99,7 @@ function trecho(n, termos) {
   }
   return (ini > 0 ? '…' : '') + out + '…';
 }
-function buscar({ q, tema, tipo, tag }) {
+function buscar({ q, tema, sub, tipo, tag }) {
   let lista = [...cache].sort((a, b) => b.atualizado.localeCompare(a.atualizado));
   const termos = norm(q || '').match(/[\p{L}\p{N}]+/gu) || [];
   if (termos.length) {
@@ -89,7 +109,7 @@ function buscar({ q, tema, tipo, tag }) {
       return { ...n, pts, trecho: trecho(n, termos) };
     }).filter(Boolean).sort((a, b) => b.pts - a.pts);
   }
-  return lista.filter(n => (!tema || n.tema === tema) && (!tipo || n.tipo === tipo) && (!tag || n.tags.includes(tag)))
+  return lista.filter(n => (!tema || n.tema === tema) && (!sub || n.sub === sub) && (!tipo || n.tipo === tipo) && (!tag || n.tags.includes(tag)))
     .map(({ corpo, _t, _g, _c, pts, ...r }) => r);
 }
 const conta = arr => Object.entries(arr.reduce((m, k) => ((m[k] = (m[k] || 0) + 1), m), {}))
@@ -251,19 +271,25 @@ function prepararHtml(html) {
 const achar = (t, s) => cache.find(n => n.id === `${t}/${s}`);
 
 const app = express();
+// Dois modos no mesmo processo: a porta PORT edita; a porta PORT_VIEW só lê
 app.use((req, res, next) => {
-  if (!SENHA) return next();
-  const h = req.headers.authorization || '';
-  const cred = h.startsWith('Basic ') ? Buffer.from(h.slice(6), 'base64').toString() : '';
-  const a = Buffer.from(cred.slice(cred.indexOf(':') + 1)), b = Buffer.from(SENHA);
-  if (a.length === b.length && crypto.timingSafeEqual(a, b)) return next();
-  res.set('WWW-Authenticate', 'Basic realm="NEXUM"').status(401).send('Autenticação necessária');
+  req.modo = PORT_VIEW && req.socket.localPort === PORT_VIEW ? 'leitura' : 'editor';
+  const senha = req.modo === 'leitura' ? SENHA_VIEW : SENHA;
+  if (senha) {
+    const h = req.headers.authorization || '';
+    const cred = h.startsWith('Basic ') ? Buffer.from(h.slice(6), 'base64').toString() : '';
+    const a = Buffer.from(cred.slice(cred.indexOf(':') + 1)), b = Buffer.from(senha);
+    if (!(a.length === b.length && crypto.timingSafeEqual(a, b))) return res.set('WWW-Authenticate', 'Basic realm="NEXUM"').status(401).send('Autenticação necessária');
+  }
+  if (req.modo === 'leitura' && req.method !== 'GET' && req.method !== 'HEAD') return res.status(403).json({ erro: 'Esta porta é somente leitura.' });
+  next();
 });
 app.use(express.json({ limit: '5mb' }));
 app.use('/midia', express.static(MIDIA));
 app.use(express.static(path.join(DIR, 'public')));
 
 app.get('/api/meta', (req, res) => res.json({
+  modo: req.modo, subs: Object.values(cache.filter(n => n.sub).reduce((m, n) => { const k = n.tema + '/' + n.sub; (m[k] ??= { tema: n.tema, nome: n.sub, qtd: 0 }).qtd++; return m; }, {})),
   tipos: TIPOS, modelos: MODELOS, temas: conta(cache.map(n => n.tema)), tags: conta(cache.flatMap(n => n.tags))
 }));
 app.get('/api/notas', (req, res) => res.json(buscar(req.query)));
@@ -271,35 +297,54 @@ app.get('/api/notas/:tema/:slug', (req, res) => {
   const n = achar(req.params.tema, req.params.slug);
   if (!n) return res.status(404).json({ erro: 'Nota não encontrada.' });
   const { _t, _g, _c, ...r } = n;
-  res.json({ ...r, html: renderMd(n.corpo), toc: sumario(n.corpo), stats: estatisticas(n.corpo), notacao: paraNotacao(n.corpo) });
+  res.json({ ...r, ligadas: n.liga.map(i => cache.find(x => x.id === i)).filter(Boolean).map(({ id, titulo, tipo, tema }) => ({ id, titulo, tipo, tema })), html: renderMd(n.corpo), toc: sumario(n.corpo), stats: estatisticas(n.corpo), notacao: paraNotacao(n.corpo) });
 });
 app.post('/api/preview', (req, res) => res.json({ html: renderMd(req.body.corpo) }));
 app.post('/api/normalizar', (req, res) => res.json(normalizar(req.body.corpo, '', true)));
 
 app.put('/api/notas', async (req, res) => {
-  const { id, titulo, tema, tipo, tags, corpo } = req.body;
+  const { id, titulo, tema, sub, tipo, tags, corpo, liga } = req.body;
   if (!String(titulo || '').trim()) return res.status(400).json({ erro: 'Informe um título.' });
   const t = slug(tema) || 'geral';
   const antigo = id ? cache.find(n => n.id === id) : null;
   let nome = antigo ? antigo.id.split('/')[1] : slug(titulo) || 'sem-titulo';
   if (!antigo) { const base = nome; let i = 2; while (fs.existsSync(path.join(ROOT, t, nome + '.md'))) nome = `${base}-${i++}`; }
+  const idFinal = `${t}/${nome}`, existentes = new Set(cache.map(n => n.id));
+  const nova = [...new Set([].concat(liga ?? antigo?.liga ?? []))].filter(x => x !== idFinal && x !== antigo?.id && existentes.has(x));
   const hoje = new Date().toISOString().slice(0, 10);
   fs.mkdirSync(path.join(ROOT, t), { recursive: true });
   const meta = { titulo: titulo.trim(), tipo: TIPOS.includes(tipo) ? tipo : 'anotacao', tema: t, tags: limpaTags(tags), criado: antigo?.criado || hoje, atualizado: hoje };
+  if (nova.length) meta.liga = nova;
+  if (slug(sub)) meta.sub = slug(sub);
   fs.writeFileSync(path.join(ROOT, t, nome + '.md'), matter.stringify(String(corpo || ''), meta));
-  if (antigo && antigo.id !== `${t}/${nome}`) fs.rmSync(path.join(ROOT, antigo.id + '.md'));
+  if (antigo && antigo.id !== idFinal) {
+    fs.rmSync(path.join(ROOT, antigo.id + '.md'));
+    for (const o of cache.filter(n => n.liga.includes(antigo.id))) gravarLiga(o.id, o.liga.map(y => y === antigo.id ? idFinal : y));
+  }
+  definirLigas(idFinal, nova, antigo ? antigo.liga : []);
   reindexar();
   await commit(`${antigo ? 'Atualiza' : 'Cria'}: ${meta.titulo}`);
-  res.json({ id: `${t}/${nome}` });
+  res.json({ id: idFinal });
 });
 app.delete('/api/notas/:tema/:slug', async (req, res) => {
   const n = achar(req.params.tema, req.params.slug);
   if (!n) return res.status(404).json({ erro: 'Nota não encontrada.' });
   fs.rmSync(path.join(ROOT, n.id + '.md'));
+  for (const o of cache.filter(x => x.liga.includes(n.id))) gravarLiga(o.id, o.liga.filter(y => y !== n.id));
   reindexar();
   await commit(`Remove: ${n.titulo}`);
   res.json({ ok: true });
 });
+const ligacao = (adiciona) => async (req, res) => {
+  const a = cache.find(n => n.id === req.body.a), b = cache.find(n => n.id === req.body.b);
+  if (!a || !b || a === b) return res.status(400).json({ erro: 'Notas inválidas.' });
+  definirLigas(a.id, adiciona ? [...new Set([...a.liga, b.id])] : a.liga.filter(y => y !== b.id));
+  reindexar();
+  await commit(`${adiciona ? 'Liga' : 'Desliga'}: ${a.titulo} e ${b.titulo}`);
+  res.json({ ok: true });
+};
+app.post('/api/ligar', ligacao(true));
+app.post('/api/desligar', ligacao(false));
 app.get('/api/historico/:tema/:slug', async (req, res) => {
   const n = achar(req.params.tema, req.params.slug);
   if (!n) return res.json([]);
@@ -336,4 +381,5 @@ app.post('/api/upload', up.single('arquivo'), async (req, res) => {
 
 reindexar();
 await commit('Início');
-app.listen(PORT, '0.0.0.0', () => console.log(`NEXUM em http://localhost:${PORT}  (${cache.length} notas)`));
+app.listen(PORT, '0.0.0.0', () => console.log(`NEXUM (editor) em http://localhost:${PORT}  (${cache.length} notas)`));
+if (PORT_VIEW && PORT_VIEW !== PORT) app.listen(PORT_VIEW, '0.0.0.0', () => console.log(`NEXUM (somente leitura) em http://localhost:${PORT_VIEW}`));

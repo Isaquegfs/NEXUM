@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>NEXUM</title>
 <style>
-:root{--bg:#f2f3f8;--papel:#fff;--tinta:#141a2b;--suave:#5d6783;--linha:#dde1ee;--acento:#4f5bd5;--c-tutorial:#3b6ff5;--c-erro-solucao:#e5532f;--c-ideia:#9a4df0;--c-anotacao:#0e9f8e;color-scheme:light dark}
-@media(prefers-color-scheme:dark){:root{--bg:#0b101c;--papel:#121a2b;--tinta:#e8ecf8;--suave:#8c97b5;--linha:#223049;--acento:#8b95ff;--c-tutorial:#7ea2ff;--c-erro-solucao:#ff8a65;--c-ideia:#c299ff;--c-anotacao:#4fd8c4}}
+:root{--bg:#f2f3f8;--papel:#fff;--tinta:#141a2b;--suave:#5d6783;--linha:#dde1ee;--acento:#4f5bd5;--c-tutorial:#3b6ff5;--c-erro-solucao:#e5532f;--c-ideia:#9a4df0;--c-anotacao:#0e9f8e;--c-script:#b7791f;color-scheme:light dark}
+@media(prefers-color-scheme:dark){:root{--bg:#0b101c;--papel:#121a2b;--tinta:#e8ecf8;--suave:#8c97b5;--linha:#223049;--acento:#8b95ff;--c-tutorial:#7ea2ff;--c-erro-solucao:#ff8a65;--c-ideia:#c299ff;--c-anotacao:#4fd8c4;--c-script:#f6c453}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tinta);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
 a{color:var(--acento)}
 :focus-visible{outline:2px solid var(--acento);outline-offset:2px}
-.t-tutorial{--cor:var(--c-tutorial)}.t-erro-solucao{--cor:var(--c-erro-solucao)}.t-ideia{--cor:var(--c-ideia)}.t-anotacao{--cor:var(--c-anotacao)}
+.t-tutorial{--cor:var(--c-tutorial)}.t-erro-solucao{--cor:var(--c-erro-solucao)}.t-ideia{--cor:var(--c-ideia)}.t-anotacao{--cor:var(--c-anotacao)}.t-script{--cor:var(--c-script)}
 .barra{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;padding:10px clamp(14px,3vw,36px);background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--linha)}
 .marca{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--tinta);text-decoration:none;white-space:nowrap}
 .barra input{flex:1;max-width:560px}
@@ -62,7 +62,7 @@ mark{background:color-mix(in srgb,var(--acento) 25%,transparent);color:inherit}
 .foco .painel{display:block}
 .p-topo{display:flex;align-items:center;gap:10px;margin-bottom:12px}.p-topo h3{margin:0}.p-topo .x{margin-left:auto;padding:0 10px;font-size:1.2rem}
 .pt{width:14px;height:14px;border-radius:50%}
-.mini{display:flex;gap:10px;align-items:center;padding:7px 10px;border-radius:8px;color:var(--tinta);text-decoration:none}.mini:hover{background:var(--bg)}.mini i{width:9px;height:9px;border-radius:50%;flex:none}
+.mini{display:flex;gap:10px;align-items:center;padding:7px 10px;border-radius:8px;color:var(--tinta);text-decoration:none}.mini:hover{background:var(--bg)}.mini small{white-space:nowrap;flex:none;margin-left:auto}.mini i{width:9px;height:9px;border-radius:50%;flex:none}
 .painel h4{margin:16px 0 6px;font-size:.85rem;color:var(--suave)}
 .p-liga button{display:block;width:100%;text-align:left;margin-bottom:6px}.p-liga small{color:var(--suave);display:block}
 .painel .btn{margin-top:14px;width:100%;text-align:center}
@@ -107,11 +107,31 @@ article blockquote.aviso{border-left-color:var(--c-erro-solucao)}article blockqu
 .codigo:hover .copiar,.codigo .copiar:focus-visible{opacity:1}
 @media(hover:none){.codigo .copiar{opacity:1}}
 /* editor */
-.linha{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin:10px 0}
+.linha{display:grid;grid-template-columns:1.2fr 1fr .8fr 1.4fr;gap:10px;margin:10px 0}
 .campo label,.linha label{font-size:.85rem;color:var(--suave);display:block;margin-bottom:2px}
 .sug{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 12px}.sug button{padding:1px 9px;font-size:.82rem}
 .abas{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 8px}.abas .on{border-color:var(--acento);font-weight:600}
 .duo{display:grid;gap:16px}.duo #pv{max-height:75vh;overflow:auto;padding:4px 18px 18px;border:1px solid var(--linha);border-radius:10px}
+/* subpastas e modo leitura */
+.leitura [data-edita]{display:none!important}
+.f[data-k=sub]{border-style:dashed}.subs{align-items:center}
+.p-sub{display:flex;align-items:center;gap:8px;margin:14px 0 4px;font-size:.85rem}.p-sub small{color:var(--suave)}.p-sub a{margin-left:auto;font-size:.8rem}
+.p-sub i{display:inline-block;width:24px;height:12px;border:1.5px dashed currentColor;border-radius:8px}
+.sub-no{fill:#0f182b;stroke-width:1.8;stroke-dasharray:4 3}
+.sub-t{font:600 12px system-ui,sans-serif;fill:#e6ecff;pointer-events:none}.sub-c{fill:#9fb0d4;font-weight:400}
+.sub-link{cursor:pointer}.sub-link:hover .sub-no{stroke-width:3;stroke-dasharray:none}
+.hasta.sub-lin{stroke-dasharray:3 3;opacity:.7;stroke-width:1.2}
+/* ligações */
+.ligas{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.liga{display:block;min-width:230px;padding:8px 14px;border:1px solid var(--linha);border-left:5px solid var(--cor);border-radius:10px;background:var(--papel);color:var(--tinta);text-decoration:none}
+.liga small{display:block;color:var(--suave);font-size:.78rem}
+.sugbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:0 0 18px;padding:10px 14px;border-radius:10px;background:color-mix(in srgb,var(--c-script) 12%,var(--papel));border:1px solid color-mix(in srgb,var(--c-script) 40%,var(--linha))}
+.lchips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.lchip{display:inline-flex;gap:8px;align-items:center;padding:3px 6px 3px 12px;border-radius:99px;border:1px solid var(--linha);border-left:5px solid var(--cor);background:var(--papel);font-size:.88rem}
+.lchip button{border:0;padding:0 8px;background:none}
+.lig-sug{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:6px 10px;border-radius:8px;background:var(--papel);border:1px dashed var(--linha);margin-top:6px}
+.lig.nl{stroke:#fbbf24;stroke-width:1.8;opacity:.8}.lig.nl.on{opacity:1}
+.np.lk{stroke:#fbbf24;stroke-width:2.2}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);padding:8px 18px;border-radius:99px;background:var(--tinta);color:var(--bg);opacity:0;pointer-events:none;transition:opacity .2s}#toast.on{opacity:1}
 @media(min-width:1100px){.duo{grid-template-columns:1fr 1fr}.so-estreito{display:none}}
 @media(max-width:1099px){.duo #pv{display:none}.duo.prev #pv{display:block}.duo.prev textarea{display:none}}
@@ -124,7 +144,8 @@ article blockquote.aviso{border-left-color:var(--c-erro-solucao)}article blockqu
 <header class="barra">
   <a class="marca" href="#/"><svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><path d="M13 13 5 6M13 13l9-4M13 13l-3 9" stroke="currentColor" stroke-width="1.6" fill="none"/><circle cx="13" cy="13" r="4" fill="var(--acento)"/><circle cx="5" cy="6" r="2.6" fill="var(--c-tutorial)"/><circle cx="22" cy="9" r="2.6" fill="var(--c-ideia)"/><circle cx="10" cy="22" r="2.6" fill="var(--c-anotacao)"/></svg><span>NEXUM</span></a>
   <input id="q" type="search" placeholder="Buscar em tudo   ( / )" aria-label="Buscar">
-  <a class="btn primario" href="#/nova">Nova nota</a>
+  <span id="modo" class="badge" hidden>Somente leitura</span>
+  <a class="btn primario" data-edita href="#/nova">Nova nota</a>
 </header>
 <main id="main"></main>
 <div id="toast" role="status"></div>
@@ -133,10 +154,10 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const api=async(u,o)=>{const r=await fetch(u,o);const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.erro||'Erro '+r.status);return j};
 const post=(u,m,b)=>api(u,{method:m,headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
-const NOMES={tutorial:'Tutorial','erro-solucao':'Erro e solução',ideia:'Ideia',anotacao:'Anotação'};
-const COR={tutorial:'#5b8cff','erro-solucao':'#ff7a4d',ideia:'#b57bff',anotacao:'#2dd4bf'};
+const NOMES={tutorial:'Tutorial','erro-solucao':'Erro e solução',script:'Script',ideia:'Ideia',anotacao:'Anotação'};
+const COR={tutorial:'#5b8cff','erro-solucao':'#ff7a4d',script:'#f5c04a',ideia:'#b57bff',anotacao:'#2dd4bf'};
 const PAL=['#7c9cff','#5eead4','#fbbf24','#f472b6','#a78bfa','#fb923c','#34d399','#60a5fa'];
-let meta={tipos:[],modelos:{},temas:[],tags:[]},filtro={q:'',tema:'',tipo:'',tag:''},rascunho=null;
+let meta={tipos:[],modelos:{},temas:[],tags:[]},filtro={q:'',tema:'',sub:'',tipo:'',tag:''},rascunho=null;
 const reduz=()=>matchMedia('(prefers-reduced-motion:reduce)').matches;
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2200)}
 function fallback(t){const a=document.createElement('textarea');a.value=t;document.body.append(a);a.select();document.execCommand('copy');a.remove()}
@@ -149,18 +170,36 @@ document.addEventListener('keydown',e=>{
 });
 $('#q').oninput=e=>{clearTimeout($('#q').t);$('#q').t=setTimeout(()=>{filtro.q=e.target.value;if(location.hash!=='#/notas')location.hash='#/notas';else rota()},180)};
 $('main').onclick=e=>{
-  const f=e.target.closest('.f');if(f){const{k,v}=f.dataset;filtro[k]=filtro[k]===v?'':v;rota();return}
-  if(e.target.closest('[data-limpar]')){filtro={q:'',tema:'',tipo:'',tag:''};$('#q').value='';rota();return}
+  const f=e.target.closest('.f');if(f){const{k,v}=f.dataset;filtro[k]=filtro[k]===v?'':v;if(k==='tema')filtro.sub='';rota();return}
+  if(e.target.closest('[data-limpar]')){filtro={q:'',tema:'',sub:'',tipo:'',tag:''};$('#q').value='';rota();return}
   const ir=e.target.closest('[data-ir]');if(ir){e.preventDefault();document.getElementById(ir.dataset.ir)?.scrollIntoView({behavior:reduz()?'auto':'smooth'});return}
-  const ar=e.target.closest('[data-area]');if(ar){filtro={q:'',tema:ar.dataset.area,tipo:'',tag:''};return}
-  const tg=e.target.closest('[data-tagf]');if(tg)filtro={q:'',tema:'',tipo:'',tag:tg.dataset.tagf};
+  const ar=e.target.closest('[data-area]');if(ar){filtro={q:'',tema:ar.dataset.area,sub:ar.dataset.sub||'',tipo:'',tag:''};return}
+  const tg=e.target.closest('[data-tagf]');if(tg)filtro={q:'',tema:'',sub:'',tipo:'',tag:tg.dataset.tagf};
 };
 
+/* ---------- ligações: sugestão e resolução ---------- */
+const REL=(a,b)=>a==='script'&&b!=='script'?'Manual deste script':a!=='script'&&b==='script'?'Script deste item':'Relacionada';
+const parKey=(a,b)=>[a,b].sort().join('|');
+const ignoradas=()=>{try{return JSON.parse(localStorage.getItem('nexum-ign')||'[]')}catch{return[]}};
+const ignorar=(a,b)=>{try{localStorage.setItem('nexum-ign',JSON.stringify([...ignoradas(),parKey(a,b)]))}catch{}};
+const normc=s=>String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const PARASTOP=new Set('script manual automatico automatica automatizado automatizada automacao tutorial como de da do das dos no na nos nas em para e a o um uma com via passo erro solucao'.split(' '));
+const toks=t=>(normc(t).match(/[a-z0-9]+/g)||[]).filter(w=>w.length>1&&!PARASTOP.has(w));
+function afinidade(a,b){
+  const A=new Set(toks(a.titulo)),B=new Set(toks(b.titulo));if(!A.size||!B.size)return 0;
+  const i=[...A].filter(x=>B.has(x)).length,j=i/new Set([...A,...B]).size,tg=(a.tags||[]).filter(x=>(b.tags||[]).includes(x)).length;
+  return j>=.5||(j>=.34&&tg>0)?j+tg*.1+((a.tipo==='script')!==(b.tipo==='script')?.2:0):0;
+}
+function sugestoes(base,notas){
+  const ign=ignoradas();
+  return notas.filter(x=>x.id!==base.id&&!(base.liga||[]).includes(x.id)&&!ign.includes(parKey(base.id||'novo',x.id))).map(x=>({n:x,s:afinidade(base,x)})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,4);
+}
+
 /* ---------- lista ---------- */
-const card=n=>`<a class="card t-${n.tipo}" href="#/nota/${n.id}"><strong>${esc(n.titulo)}</strong><p>${n.trecho||esc(n.resumo)}</p><div class="meta"><span class="tipo">${NOMES[n.tipo]}</span><span>${esc(n.tema)}</span>${n.tags.map(t=>`<span>#${esc(t)}</span>`).join('')}<span>${esc(n.atualizado)}</span></div></a>`;
+const card=n=>`<a class="card t-${n.tipo}" href="#/nota/${n.id}"><strong>${esc(n.titulo)}</strong><p>${n.trecho||esc(n.resumo)}</p><div class="meta"><span class="tipo">${NOMES[n.tipo]}</span><span>${esc(n.tema)}${n.sub?` / ${esc(n.sub)}`:''}</span>${n.tags.map(t=>`<span>#${esc(t)}</span>`).join('')}<span>${esc(n.atualizado)}</span>${(n.liga||[]).length?`<span>↔ ${n.liga.length}</span>`:''}</div></a>`;
 function chips(){
   const b=(k,v,q)=>`<button class="chip f ${filtro[k]===v?'on':''}" data-k="${k}" data-v="${esc(v)}">${esc(NOMES[v]||v)}${q?` <small>${q}</small>`:''}</button>`;
-  return `<div class="filtros"><div>${meta.temas.map(t=>b('tema',t.nome,t.qtd)).join('')}</div><div>${meta.tipos.map(t=>b('tipo',t)).join('')}</div><div>${meta.tags.slice(0,20).map(t=>b('tag',t.nome,t.qtd)).join('')}</div></div>`;
+  return `<div class="filtros"><div>${meta.temas.map(t=>b('tema',t.nome,t.qtd)).join('')}</div>${filtro.tema&&meta.subs.some(x=>x.tema===filtro.tema)?`<div class="subs"><small class="vazio">Subpastas de ${esc(filtro.tema)}:</small>${meta.subs.filter(x=>x.tema===filtro.tema).map(x=>b('sub',x.nome,x.qtd)).join('')}</div>`:''}<div>${meta.tipos.map(t=>b('tipo',t)).join('')}</div><div>${meta.tags.slice(0,20).map(t=>b('tag',t.nome,t.qtd)).join('')}</div></div>`;
 }
 async function lista(){
   const notas=await api('/api/notas?'+new URLSearchParams(Object.entries(filtro).filter(([,v])=>v)));
@@ -176,55 +215,88 @@ function animarVB(svg,alvo){
   const t0=performance.now(),passo=t=>{const k=Math.min(1,(t-t0)/500),e=1-Math.pow(1-k,3);svg.setAttribute('viewBox',de.map((v,i)=>v+(alvo[i]-v)*e).join(' '));if(k<1)svg._raf=requestAnimationFrame(passo)};
   svg._raf=requestAnimationFrame(passo);
 }
+const f0=v=>v.toFixed(0);
+const quebra=(t,n=26)=>{const L=[];let c='';for(const w of String(t).split(/\s+/)){if(c&&(c+' '+w).length>n&&L.length<2){L.push(c);c=w}else c=c?c+' '+w:w}L.push(c);return L};
+const rotNota=(t,x,y,c)=>{const L=quebra(t),y0=y+4-(L.length-1)*6;return `<text class="nlab" x="${f0(x)}" y="${f0(y0)}" text-anchor="${c>.25?'start':c<-.25?'end':'middle'}">${L.map((l,i)=>`<tspan x="${f0(x)}" dy="${i?12:0}">${esc(l)}</tspan>`).join('')}</text>`};
+function caber(b,pad,asp,minW=0){let x=b.x-pad,y=b.y-pad,w=b.width+2*pad,h=b.height+2*pad;
+  if(w/h<asp){const nw=h*asp;x-=(nw-w)/2;w=nw}else{const nh=w/asp;y-=(nh-h)/2;h=nh}
+  if(w<minW){const cx=x+w/2,cy=y+h/2;w=minW;h=minW/asp;x=cx-w/2;y=cy-h/2}
+  return[x,y,w,h]}
 async function inicio(){
-  const notas=await api('/api/notas'),hoje=Date.now();
+  const LEI=meta.modo==='leitura',notas=await api('/api/notas'),hoje=Date.now(),ign=ignoradas();
   const T=meta.temas.map((t,i)=>({...t,cor:PAL[i%PAL.length],notas:notas.filter(x=>x.tema===t.nome)}));
-  T.forEach(t=>t.tags=new Set(t.notas.flatMap(x=>x.tags)));
+  T.forEach(t=>{t.tags=new Set(t.notas.flatMap(x=>x.tags));const m=new Map();t.notas.forEach(x=>{if(x.sub){if(!m.has(x.sub))m.set(x.sub,[]);m.get(x.sub).push(x)}});t.subs=[...m].map(([nome,ns])=>({nome,notas:ns}));t.diretas=t.notas.filter(x=>!x.sub)});
   const pares=[];
   for(let i=0;i<T.length;i++)for(let j=i+1;j<T.length;j++){const c=[...T[i].tags].filter(x=>T[j].tags.has(x));if(c.length)pares.push({a:i,b:j,tags:c})}
   let conex=0;for(let i=0;i<notas.length;i++)for(let j=i+1;j<notas.length;j++)if(notas[i].tags.some(x=>notas[j].tags.includes(x)))conex++;
+  const porId=Object.fromEntries(notas.map(x=>[x.id,x])),ligs=[];
+  notas.forEach(x=>(x.liga||[]).forEach(y=>{if(x.id<y)ligs.push([x.id,y])}));
+  const scriptsSem=notas.filter(x=>x.tipo==='script'&&!(x.liga||[]).some(y=>porId[y]&&porId[y].tipo!=='script')).length;
+  let sug=null;
+  if(!LEI)for(let i=0;i<notas.length;i++)for(let j=i+1;j<notas.length;j++){const a=notas[i],b=notas[j];if((a.liga||[]).includes(b.id)||ign.includes(parKey(a.id,b.id)))continue;const s=afinidade(a,b);
+    if(s>0&&(!sug||s>sug.s))sug=b.tipo==='script'&&a.tipo!=='script'?{s,a:b,b:a}:{s,a,b}}
   const revisar=notas.filter(x=>x.atualizado&&hoje-new Date(x.atualizado)>90*864e5).length,semTags=notas.filter(x=>!x.tags.length).length;
   const topo=[...pares].sort((x,y)=>y.tags.length-x.tags.length)[0];
   const stat=(v,l)=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`;
   const cab=`<div class="topo"><h1>Seu conhecimento</h1></div>
-  <div class="captura"><input id="cap" placeholder="Anote algo rápido e aperte Enter. Vai para a caixa de entrada." aria-label="Anotação rápida"><button id="capbtn" class="btn primario">Guardar</button></div>
-  <div class="stats">${stat(notas.length,'notas')}${stat(T.length,'áreas')}${stat(conex,'conexões entre notas')}${stat(meta.tags.length,'tags')}${stat(revisar,'para revisar (90+ dias)')}</div>`;
+  <div class="captura" data-edita><input id="cap" placeholder="Anotação rápida: escreva e aperte Enter" aria-label="Anotação rápida"><button id="capbtn" class="btn primario">Guardar</button></div>
+  <div class="stats">${stat(notas.length,'notas')}${stat(T.length,'áreas')}${stat(meta.subs.length,'subpastas')}${stat(ligs.length,'ligações')}${stat(conex,'conexões por tags')}${stat(revisar,'para revisar (90+ dias)')}${scriptsSem?stat(scriptsSem,'scripts sem manual'):''}</div>`;
   const ligarCap=()=>{const c=$('#cap');const salvar=async()=>{const v=c.value.trim();if(!v)return;try{await post('/api/notas','PUT',{titulo:v.split('\n')[0].slice(0,60),tema:'caixa-de-entrada',tipo:'anotacao',tags:'',corpo:v});toast('Guardado em caixa-de-entrada');rota()}catch(x){toast(x.message)}};c.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();salvar()}};$('#capbtn').onclick=salvar};
-  if(!T.length){$('main').innerHTML=cab+`<div class="aviso">Nada no mapa ainda. Guarde uma anotação acima, <a href="#/nova">crie uma nota</a> ou importe um docx.</div>`;ligarCap();return}
+  if(!T.length){$('main').innerHTML=cab+`<div class="aviso">Nada no mapa ainda.${LEI?'':' Guarde uma anotação acima, <a href="#/nova">crie uma nota</a> ou importe um docx.'}</div>`;ligarCap();return}
 
-  const W=1000,Hh=640,cx=500,cy=320,n=T.length,anim=!reduz();
+  const W=1000,Hh=640,asp=W/Hh,cx=500,cy=320,n=T.length,anim=!reduz(),P={};
   T.forEach((t,i)=>{const a=-Math.PI/2+2*Math.PI*i/n+(n>1?Math.PI/n:0);t.x=cx+330*Math.cos(a);t.y=cy+212*Math.sin(a);t.r=17+Math.min(t.qtd,10)*1.6;t.ang=Math.atan2(t.y-cy,t.x-cx)});
-  const f0=v=>v.toFixed(0);
   const ligCore=T.map((t,i)=>{const mx=(cx+t.x)/2,my=(cy+t.y)/2,dx=t.y-cy,dy=-(t.x-cx),L=Math.hypot(dx,dy)||1,d=`M${cx},${cy} Q${f0(mx+dx/L*22)},${f0(my+dy/L*22)} ${f0(t.x)},${f0(t.y)}`;
-    return `<path class="lig core" data-a="${i}" d="${d}" stroke="${t.cor}"/>`+(anim?`<circle r="2.6" fill="${t.cor}"><animateMotion dur="${5+i%3}s" begin="${(i*.7).toFixed(1)}s" repeatCount="indefinite" path="${d}"/></circle>`:'')}).join('');
+    return `<path class="lig core" data-a="${i}" d="${d}" stroke="${t.cor}"/>`+(anim?`<circle r="2.6" fill="${t.cor}"><animateMotion dur="${5+i%3}s" begin="-${(i*1.7).toFixed(1)}s" repeatCount="indefinite" path="${d}"/></circle>`:'')}).join('');
   const ligCruz=pares.map(p=>{const A=T[p.a],B=T[p.b],mx=(A.x+B.x)/2,my=(A.y+B.y)/2;
     return `<path class="lig cruz" data-a="${p.a}" data-b="${p.b}" d="M${f0(A.x)},${f0(A.y)} Q${f0(mx+(mx-cx)*.35)},${f0(my+(my-cy)*.35)} ${f0(B.x)},${f0(B.y)}" stroke="#9fb0d4" stroke-width="${1+Math.min(p.tags.length,5)*.8}"><title>${esc(p.tags.map(x=>'#'+x).join(' '))}</title></path>`}).join('');
   const grupos=T.map((t,i)=>{
-    const m=Math.min(t.notas.length,9),Rn=t.r+36+(m>6?12:0);
-    const nos=t.notas.slice(0,m).map((x,k)=>{const a=t.ang+(k-(m-1)/2)*.5,c=Math.cos(a),px=t.x+Rn*c,py=t.y+Rn*Math.sin(a),lx=t.x+(Rn+12)*c,ly=t.y+(Rn+12)*Math.sin(a);
-      return `<a class="folha-link" href="#/nota/${x.id}"><line class="hasta" x1="${f0(t.x)}" y1="${f0(t.y)}" x2="${f0(px)}" y2="${f0(py)}" stroke="${t.cor}"/><circle class="np" cx="${f0(px)}" cy="${f0(py)}" r="5.5" fill="${COR[x.tipo]}"><title>${esc(x.titulo)}</title></circle><text class="nlab" x="${f0(lx)}" y="${f0(ly+4)}" text-anchor="${c>.25?'start':c<-.25?'end':'middle'}">${esc(x.titulo.length>28?x.titulo.slice(0,27)+'…':x.titulo)}</text></a>`}).join('');
-    return `<g class="tema" data-i="${i}" tabindex="0" role="button" aria-label="${esc(t.nome)}, ${t.qtd} notas">${nos}<circle class="halo" cx="${f0(t.x)}" cy="${f0(t.y)}" r="${f0(t.r+8)}" fill="${t.cor}"/><circle class="no" cx="${f0(t.x)}" cy="${f0(t.y)}" r="${f0(t.r)}" stroke="${t.cor}"/><text class="num" x="${f0(t.x)}" y="${f0(t.y+4)}" text-anchor="middle">${t.qtd}</text><text class="rotulo" x="${f0(t.x)}" y="${f0(t.y<=cy?t.y+t.r+17:t.y-t.r-9)}" text-anchor="middle">${esc(t.nome)}</text></g>`}).join('');
-  const svg=`<svg class="mapa" viewBox="0 0 ${W} ${Hh}" role="group" aria-label="Mapa de conexões do conhecimento"><defs><filter id="gl"><feGaussianBlur stdDeviation="8"/></filter><radialGradient id="nucleo"><stop offset="0" stop-color="#2b3f78"/><stop offset="1" stop-color="#16213f"/></radialGradient></defs>${ligCruz}${ligCore}${grupos}
+    const filhos=[...t.subs.map(s=>({s})),...t.diretas.slice(0,9).map(x=>({x}))],c=filhos.length,step=c<=2?.9:c<=4?.75:Math.min(.6,2.8/(c-1));
+    let ln='',pt='',pl='';
+    const dot=(x,px,py,lx,ly,ca)=>{P[x.id]=[px,py];return `<a class="folha-link" href="#/nota/${x.id}"><circle class="np${(x.liga||[]).length?' lk':''}" cx="${f0(px)}" cy="${f0(py)}" r="5.5" fill="${COR[x.tipo]}"><title>${esc(x.titulo)}</title></circle>${rotNota(x.titulo,lx,ly,ca)}</a>`};
+    filhos.forEach((f,k)=>{
+      const a=t.ang+(k-(c-1)/2)*step,ca=Math.cos(a),sa=Math.sin(a);
+      if(f.x){const R=t.r+36;ln+=`<line class="hasta" x1="${f0(t.x)}" y1="${f0(t.y)}" x2="${f0(t.x+R*ca)}" y2="${f0(t.y+R*sa)}" stroke="${t.cor}"/>`;pt+=dot(f.x,t.x+R*ca,t.y+R*sa,t.x+(R+12)*ca,t.y+(R+12)*sa,ca)}
+      else{const s=f.s,w=Math.max(60,s.nome.length*7.4+38),R=t.r+60+w*.32,sx=t.x+R*ca,sy=t.y+R*sa,m=Math.min(s.notas.length,9),st=Math.min(.7,2.6/Math.max(m-1,1)),Rn=Math.max(46,w/2+22);
+        ln+=`<line class="hasta sub-lin" x1="${f0(t.x)}" y1="${f0(t.y)}" x2="${f0(sx)}" y2="${f0(sy)}" stroke="${t.cor}"/>`;
+        s.notas.slice(0,m).forEach((x,j)=>{const b=a+(j-(m-1)/2)*st,cb=Math.cos(b),sb=Math.sin(b);ln+=`<line class="hasta" x1="${f0(sx)}" y1="${f0(sy)}" x2="${f0(sx+Rn*cb)}" y2="${f0(sy+Rn*sb)}" stroke="${t.cor}"/>`;pt+=dot(x,sx+Rn*cb,sy+Rn*sb,sx+(Rn+12)*cb,sy+(Rn+12)*sb,cb)});
+        pl+=`<a class="sub-link" href="#/notas" data-area="${esc(t.nome)}" data-sub="${esc(s.nome)}"><rect class="sub-no" x="${f0(sx-w/2)}" y="${f0(sy-12)}" width="${f0(w)}" height="24" rx="12" stroke="${t.cor}"/><text class="sub-t" x="${f0(sx)}" y="${f0(sy+4)}" text-anchor="middle">${esc(s.nome)} <tspan class="sub-c">${s.notas.length}</tspan></text><title>${esc(s.nome)}: ${s.notas.length} notas</title></a>`}
+    });
+    return `<g class="tema" data-i="${i}" tabindex="0" role="button" aria-label="${esc(t.nome)}, ${t.qtd} notas">${ln}${pt}${pl}<circle class="halo" cx="${f0(t.x)}" cy="${f0(t.y)}" r="${f0(t.r+8)}" fill="${t.cor}"/><circle class="no" cx="${f0(t.x)}" cy="${f0(t.y)}" r="${f0(t.r)}" stroke="${t.cor}"/><text class="num" x="${f0(t.x)}" y="${f0(t.y+4)}" text-anchor="middle">${t.qtd}</text><text class="rotulo" x="${f0(t.x)}" y="${f0(t.y<=cy?t.y+t.r+17:t.y-t.r-9)}" text-anchor="middle">${esc(t.nome)}</text></g>`}).join('');
+  const idxT=Object.fromEntries(T.map((t,i)=>[t.nome,i])),posN=id=>P[id]||(T[idxT[id.split('/')[0]]]?[T[idxT[id.split('/')[0]]].x,T[idxT[id.split('/')[0]]].y]:null);
+  const ligN=ligs.map(([a,b])=>{const pa=posN(a),pb=posN(b);if(!pa||!pb)return '';
+    const mx=(pa[0]+pb[0])/2,my=(pa[1]+pb[1])/2,dx=pb[1]-pa[1],dy=pa[0]-pb[0],L=Math.hypot(dx,dy)||1,k=Math.min(Math.hypot(pb[0]-pa[0],pb[1]-pa[1])*.25,40);
+    return `<path class="lig nl" data-a="${idxT[porId[a].tema]}" data-b="${idxT[porId[b].tema]}" d="M${f0(pa[0])},${f0(pa[1])} Q${f0(mx+dx/L*k)},${f0(my+dy/L*k)} ${f0(pb[0])},${f0(pb[1])}"><title>${esc(porId[a].titulo)} ↔ ${esc(porId[b].titulo)}</title></path>`}).join('');
+  const svg=`<svg class="mapa" viewBox="0 0 ${W} ${Hh}" role="group" aria-label="Mapa de conexões do conhecimento"><defs><filter id="gl"><feGaussianBlur stdDeviation="8"/></filter><radialGradient id="nucleo"><stop offset="0" stop-color="#2b3f78"/><stop offset="1" stop-color="#16213f"/></radialGradient></defs>${ligCruz}${ligCore}${ligN}${grupos}
   <g class="core" id="core" tabindex="0" role="button" aria-label="Ver o mapa inteiro"><circle class="pulso" cx="${cx}" cy="${cy}" r="46"/><circle cx="${cx}" cy="${cy}" r="44" fill="url(#nucleo)" stroke="#7c9cff" stroke-width="2"/><text x="${cx}" y="${cy-8}">Meu</text><text x="${cx}" y="${cy+6}">conhecimento</text><text class="cn" x="${cx}" y="${cy+22}">${notas.length} notas</text></g></svg>`;
-  const insight=topo?`As áreas <b>${esc(T[topo.a].nome)}</b> e <b>${esc(T[topo.b].nome)}</b> compartilham ${topo.tags.length} tag${topo.tags.length>1?'s':''} (${topo.tags.slice(0,4).map(x=>'#'+esc(x)).join(', ')}). Que tal uma nota ligando as duas?`
+  const nm=x=>`<b>${esc(x.titulo)}</b> (${NOMES[x.tipo]})`;
+  const insight=sug?`${nm(sug.a)} e ${nm(sug.b)} parecem tratar do mesmo item. ${sug.a.tipo==='script'&&sug.b.tipo!=='script'?'Ligar o script ao manual?':'Ligar as duas notas?'}`
+    :topo?`As áreas <b>${esc(T[topo.a].nome)}</b> e <b>${esc(T[topo.b].nome)}</b> compartilham ${topo.tags.length} tag${topo.tags.length>1?'s':''} (${topo.tags.slice(0,4).map(x=>'#'+esc(x)).join(', ')}).${LEI?'':' Que tal uma nota ligando as duas?'}`
     :semTags?`${semTags} nota${semTags>1?'s estão':' está'} sem tags. Com tags, o mapa passa a ligar uma área à outra.`:'Use as mesmas tags em áreas diferentes: é assim que o mapa mostra as conexões.';
+  const acao=sug?'<span class="acoes" data-edita><button class="btn primario" id="ligsug">Ligar</button><button id="ignsug">Ignorar</button></span>':topo?'<button class="btn primario" id="lig" data-edita>Criar nota ligando</button>':'';
+  const lista=l=>l.map(x=>`<a href="#/nota/${x.id}" class="mini"><i style="background:${COR[x.tipo]}"></i><span>${esc(x.titulo)}</span>${(x.liga||[]).length?`<small class="vazio">↔ ${x.liga.length}</small>`:''}</a>`).join('');
   const painel=i=>{const t=T[i],liga=pares.filter(p=>p.a===i||p.b===i).map(p=>({j:p.a===i?p.b:p.a,tags:p.tags}));
-    return `<div class="p-topo"><span class="pt" style="background:${t.cor}"></span><div><h3>${esc(t.nome)}</h3><span class="vazio">${t.qtd} notas</span></div><button class="x" data-fechar aria-label="Fechar">×</button></div>
-    ${t.notas.map(x=>`<a href="#/nota/${x.id}" class="mini"><i style="background:${COR[x.tipo]}"></i><span>${esc(x.titulo)}</span></a>`).join('')}
+    const corpo=t.subs.length?t.subs.map(s=>`<div class="p-sub" style="color:${t.cor}"><i></i><b>${esc(s.nome)}</b><small>${s.notas.length}</small><a href="#/notas" data-area="${esc(t.nome)}" data-sub="${esc(s.nome)}">abrir</a></div>${lista(s.notas)}`).join('')+(t.diretas.length?`<div class="p-sub"><b>Sem subpasta</b></div>${lista(t.diretas)}`:''):lista(t.notas);
+    return `<div class="p-topo"><span class="pt" style="background:${t.cor}"></span><div><h3>${esc(t.nome)}</h3><span class="vazio">${t.qtd} notas</span></div><button class="x" data-fechar aria-label="Fechar">×</button></div>${corpo}
     ${liga.length?`<h4>Conecta com</h4><div class="p-liga">${liga.map(l=>`<button data-foco="${l.j}"><b style="color:${T[l.j].cor}">●</b> ${esc(T[l.j].nome)}<small>${l.tags.map(x=>'#'+esc(x)).join(' ')}</small></button>`).join('')}</div>`:''}
     <a class="btn primario" href="#/notas" data-area="${esc(t.nome)}">Abrir área</a>`};
   $('main').innerHTML=cab+`<div class="mapa-wrap"><div class="tela">${svg}</div><aside class="painel"></aside></div>
-  <div class="ramos">${T.map(t=>`<a class="card" href="#/notas" data-area="${esc(t.nome)}"><strong>${esc(t.nome)}</strong><div class="meta"><span>${t.qtd} notas</span>${pares.filter(p=>T[p.a]===t||T[p.b]===t).map(p=>`<span>↔ ${esc(T[p.a]===t?T[p.b].nome:T[p.a].nome)}</span>`).join('')}</div></a>`).join('')}</div>
-  <div class="meta legenda">${meta.tipos.map(t=>`<span><i style="background:${COR[t]}"></i>${NOMES[t]}</span>`).join('')}</div>
-  <div class="insight"><span>${insight}</span>${topo?'<button class="btn primario" id="lig">Criar nota ligando</button>':''}</div>
+  <div class="ramos">${T.map(t=>`<a class="card" href="#/notas" data-area="${esc(t.nome)}"><strong>${esc(t.nome)}</strong><div class="meta"><span>${t.qtd} notas</span>${t.subs.map(s=>`<span>↳ ${esc(s.nome)} ${s.notas.length}</span>`).join('')}${pares.filter(p=>T[p.a]===t||T[p.b]===t).map(p=>`<span>↔ ${esc(T[p.a]===t?T[p.b].nome:T[p.a].nome)}</span>`).join('')}</div></a>`).join('')}</div>
+  <div class="meta legenda">${meta.tipos.map(t=>`<span><i style="background:${COR[t]}"></i>${NOMES[t]}</span>`).join('')}<span><i style="background:#fbbf24;height:3px;border-radius:2px;width:16px"></i>ligação entre notas</span><span><i style="border:1.5px dashed currentColor;border-radius:8px;width:22px;height:12px;background:none"></i>subpasta</span></div>
+  <div class="insight"><span>${insight}</span>${acao}</div>
   <h3 class="sec">Recentes</h3><div class="grade">${notas.slice(0,6).map(card).join('')}</div>`;
   ligarCap();
   const wrap=$('.mapa-wrap'),sv=$('.mapa'),pn=$('.painel');let foco=-1;
+  let base=[0,0,W,Hh];const bb=sv.getBBox?.();
+  if(bb&&bb.width){const x0=Math.min(0,bb.x-24),y0=Math.min(0,bb.y-24),x1=Math.max(W,bb.x+bb.width+24),y1=Math.max(Hh,bb.y+bb.height+24);base=caber({x:x0,y:y0,width:x1-x0,height:y1-y0},0,asp)}
+  sv.setAttribute('viewBox',base.join(' '));sv._vb=base;
   const realcar=i=>sv.querySelectorAll('.lig').forEach(l=>l.classList.toggle('on',i>=0&&(+l.dataset.a===i||(l.dataset.b!==undefined&&+l.dataset.b===i))));
+  const alvoFoco=()=>{const g=sv.querySelector(`.tema[data-i="${foco}"]`),b=g&&g.getBBox?.();if(!b||!b.width)return[Math.max(0,Math.min(W-560,T[foco].x-280)),Math.max(0,Math.min(Hh-350,T[foco].y-175)),560,350];
+    const v=caber(b,36,asp,420);return v[2]>base[2]?base:v};
   const aplicar=()=>{wrap.classList.toggle('foco',foco>=0);sv.classList.toggle('tem-foco',foco>=0);sv.querySelectorAll('.tema').forEach(g=>g.classList.toggle('on',+g.dataset.i===foco));realcar(foco);pn.innerHTML=foco>=0?painel(foco):'';
-    animarVB(sv,foco>=0?[Math.max(0,Math.min(W-560,T[foco].x-280)),Math.max(0,Math.min(Hh-350,T[foco].y-175)),560,350]:[0,0,W,Hh])};
+    animarVB(sv,foco>=0?alvoFoco():base)};
   wrap.onclick=e=>{
-    if(e.target.closest('.folha-link'))return;
+    if(e.target.closest('.folha-link,.sub-link'))return;
     const g=e.target.closest('.tema');if(g){foco=foco===+g.dataset.i?-1:+g.dataset.i;aplicar();return}
     const f=e.target.closest('[data-foco]');if(f){foco=+f.dataset.foco;aplicar();return}
     if(e.target.closest('[data-fechar]')||e.target.closest('#core')||e.target===sv||e.target.classList.contains('tela')){foco=-1;aplicar()}
@@ -232,51 +304,72 @@ async function inicio(){
   sv.onmouseover=e=>{const g=e.target.closest('.tema');if(foco<0&&g)realcar(+g.dataset.i)};
   sv.onmouseout=()=>{if(foco<0)realcar(-1)};
   if($('#lig'))$('#lig').onclick=()=>{rascunho={titulo:`${T[topo.a].nome} + ${T[topo.b].nome}`,tema:'',tipo:'ideia',tags:topo.tags.slice(0,6)};location.hash='#/nova'};
+  if($('#ligsug')){$('#ligsug').onclick=async()=>{try{await post('/api/ligar','POST',{a:sug.a.id,b:sug.b.id});toast('Notas ligadas');rota()}catch(x){toast(x.message)}};$('#ignsug').onclick=()=>{ignorar(sug.a.id,sug.b.id);rota()}}
 }
 
 /* ---------- nota ---------- */
 async function ver(tema,slug){
-  const n=await api(`/api/notas/${tema}/${slug}`),s=n.stats;
+  const[n,todas]=await Promise.all([api(`/api/notas/${tema}/${slug}`),api('/api/notas')]),s=n.stats,sg=sugestoes(n,todas)[0];
   const bd=(v,a,b)=>v?`<span class="badge"><b>${v}</b> ${v===1?a:b}</span>`:'';
   const toc=n.toc.length>=2?`<h4>Nesta nota</h4>${n.toc.map(t=>`<a href="#/nota/${n.id}" data-ir="${esc(t.id)}">${esc(t.texto)}</a>`).join('')}`:'';
+  const semManual=n.tipo==='script'&&!n.ligadas.some(l=>l.tipo!=='script');
+  const ligas=n.ligadas.map(l=>`<a class="liga t-${l.tipo}" href="#/nota/${l.id}"><small>${REL(n.tipo,l.tipo)}</small><b>${esc(l.titulo)}</b></a>`).join('')+(semManual?`<a class="liga t-script" data-edita href="#/editar/${n.id}"><small>Manual deste script</small><b class="vazio">Nenhum ligado. Ligar agora</b></a>`:'');
   $('main').innerHTML=`<div class="leitor t-${n.tipo}"><header class="capa">
-    <div class="trilha"><a href="#/">Início</a><span>/</span><a href="#/notas" data-area="${esc(n.tema)}">${esc(n.tema)}</a></div>
-    <div class="capa-topo"><span class="selo">${NOMES[n.tipo]}</span><div class="acoes"><a class="btn" href="#/editar/${n.id}">Editar</a><button id="hist">Histórico</button><button id="del" class="perigo">Excluir</button></div></div>
+    <div class="trilha"><a href="#/">Início</a><span>/</span><a href="#/notas" data-area="${esc(n.tema)}">${esc(n.tema)}</a>${n.sub?`<span>/</span><a href="#/notas" data-area="${esc(n.tema)}" data-sub="${esc(n.sub)}">${esc(n.sub)}</a>`:''}</div>
+    <div class="capa-topo"><span class="selo">${NOMES[n.tipo]}</span><div class="acoes"><a class="btn" data-edita href="#/editar/${n.id}">Editar</a><button id="hist">Histórico</button><button id="del" data-edita class="perigo">Excluir</button></div></div>
     <h1>${esc(n.titulo)}</h1>
     <div class="badges">${bd(s.passos,'passo','passos')}${bd(s.blocos,'bloco de código','blocos de código')}<span class="badge"><b>${s.minutos}</b> min de leitura</span></div>
-    <div class="tags">${n.tags.map(t=>`<a href="#/notas" data-tagf="${esc(t)}">#${esc(t)}</a>`).join('')}</div></header>
+    <div class="tags">${n.tags.map(t=>`<a href="#/notas" data-tagf="${esc(t)}">#${esc(t)}</a>`).join('')}</div>
+    ${ligas?`<div class="ligas">${ligas}</div>`:''}</header>
+    ${sg?`<div class="sugbar" data-edita><span>${NOMES[sg.n.tipo]} <b>${esc(sg.n.titulo)}</b> parece tratar do mesmo item. Ligar?</span><span class="acoes"><button class="btn primario" id="sl">Ligar</button><button id="si">Ignorar</button></span></div>`:''}
     <ul id="lh" class="hist" hidden></ul>
     <div class="corpo"><article>${n.html}</article><aside class="rail">${toc}<div class="ficha">Criada em ${esc(n.criado)}<br>Atualizada em ${esc(n.atualizado)}</div></aside></div></div>`;
   $('#hist').onclick=async()=>{const h=await api(`/api/historico/${n.id}`),u=$('#lh');u.hidden=!u.hidden;u.innerHTML=h.length?h.map(c=>`<li>${esc(c.data)} ${esc(c.msg)} (${c.hash})</li>`).join(''):'<li>Sem histórico ainda.</li>'};
   $('#del').onclick=async()=>{if(confirm(`Excluir "${n.titulo}"? O histórico continua no Git.`)){await api(`/api/notas/${n.id}`,{method:'DELETE'});location.hash='#/'}};
+  if($('#sl')){$('#sl').onclick=async()=>{try{await post('/api/ligar','POST',{a:n.id,b:sg.n.id});toast('Notas ligadas');rota()}catch(x){toast(x.message)}};$('#si').onclick=()=>{ignorar(n.id,sg.n.id);rota()}}
   const ls=[...document.querySelectorAll('.rail [data-ir]')];
   if(ls.length&&'IntersectionObserver' in window){const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting)ls.forEach(l=>l.classList.toggle('ativo',l.dataset.ir===en.target.id))}),{rootMargin:'-80px 0px -70% 0px'});ls.forEach(l=>{const h=document.getElementById(l.dataset.ir);if(h)io.observe(h)})}
 }
 
 /* ---------- editor ---------- */
-function editor(n){
-  const rd=rascunho;rascunho=null;const novo=!n,tp=rd?.tipo||'tutorial';
-  n=n||{titulo:rd?.titulo||'',tema:rd?.tema??filtro.tema,tipo:tp,tags:rd?.tags||[],corpo:meta.modelos[tp]};
-  let modelo=novo?meta.modelos[n.tipo]:null;
+async function editor(n){
+  const rd=rascunho;rascunho=null;const novo=!n,tp=rd?.tipo||'tutorial',todas=await api('/api/notas');
+  n=n||{titulo:rd?.titulo||'',tema:rd?.tema??filtro.tema,sub:rd?'':filtro.sub||'',tipo:tp,tags:rd?.tags||[],corpo:meta.modelos[tp],liga:[]};
+  let modelo=novo?meta.modelos[n.tipo]:null,liga=[...(n.liga||[])];
+  const porRot=new Map(todas.filter(x=>x.id!==n.id).map(x=>[`${x.titulo} (${x.tema})`,x]));
   $('main').innerHTML=`<div class="topo"><h1>${novo?'Nova nota':'Editar nota'}</h1><div class="acoes"><button id="sv" class="btn primario">Salvar</button><a class="btn" href="#/${novo?'':'nota/'+n.id}">Cancelar</a></div></div><div id="msg"></div>
   <div class="campo"><label for="ft">Título</label><input id="ft" value="${esc(n.titulo)}"></div>
   <div class="linha"><div><label for="fm">Tema (pasta)</label><input id="fm" list="temas" value="${esc(n.tema)}" placeholder="redes, linux, virtualizacao"><datalist id="temas">${meta.temas.map(t=>`<option value="${esc(t.nome)}">`).join('')}</datalist></div>
+  <div><label for="fs">Subpasta (opcional)</label><input id="fs" list="subs" value="${esc(n.sub||'')}" placeholder="zabbix, ad"><datalist id="subs"></datalist></div>
   <div><label for="fp">Tipo</label><select id="fp">${meta.tipos.map(t=>`<option value="${t}" ${t===n.tipo?'selected':''}>${NOMES[t]}</option>`).join('')}</select></div>
   <div><label for="fg">Tags (separe por vírgula)</label><input id="fg" value="${esc(n.tags.join(', '))}"></div></div>
   <div class="sug">${meta.tags.slice(0,16).map(t=>`<button type="button" data-t="${esc(t.nome)}">#${esc(t.nome)}</button>`).join('')}</div>
+  <div class="campo"><label for="fl">Ligações (ex.: o manual de um script)</label><div id="lchips" class="lchips"></div><input id="fl" list="notasl" placeholder="Ligar a outra nota: digite o título"><datalist id="notasl">${[...porRot.keys()].map(k=>`<option value="${esc(k)}">`).join('')}</datalist><div id="lsug"></div></div>
+  <p class="vazio" style="margin:12px 0 8px;font-size:.85rem">Escreva <code>// Título</code> para títulos (<code>///</code> subtítulo) e <code>#</code> no começo da linha para código. Linhas seguidas com <code>#</code> formam uma caixa.</p>
   <div class="abas"><button id="ae" class="on so-estreito">Escrever</button><button id="av" class="so-estreito">Prévia</button><button id="an" title="Detecta códigos (linhas com #), ajusta títulos e remove sobras do Word">Arrumar formatação</button>${novo?'<label class="btn">Importar docx<input id="fu" type="file" accept=".docx,.md,.txt" hidden></label>':''}</div>
-  <p class="vazio" style="margin:0 0 8px;font-size:.85rem">Escreva <code>// Título</code> para títulos (<code>///</code> subtítulo) e <code>#</code> no começo da linha para código. Linhas seguidas com <code>#</code> formam uma caixa.</p><div class="duo"><textarea id="fc" aria-label="Conteúdo em Markdown">${esc(n.notacao??n.corpo)}</textarea><article id="pv" class="t-${n.tipo}"></article></div>`;
+  <div class="duo"><textarea id="fc" aria-label="Conteúdo">${esc(n.notacao??n.corpo)}</textarea><article id="pv" class="t-${n.tipo}"></article></div>`;
   const msg=(t,c='erro')=>$('#msg').innerHTML=t?`<p class="aviso ${c}">${esc(t)}</p>`:'';
+  const slugC=s=>normc(s).replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''),opSub=()=>{$('#subs').innerHTML=meta.subs.filter(x=>x.tema===slugC($('#fm').value)).map(x=>`<option value="${esc(x.nome)}">`).join('')};opSub();$('#fm').oninput=opSub;
+  const desenhaL=()=>{
+    $('#lchips').innerHTML=liga.map(id=>{const x=todas.find(y=>y.id===id);return x?`<span class="lchip t-${x.tipo}"><span><small class="vazio">${REL($('#fp').value,x.tipo)}</small> ${esc(x.titulo)}</span><button type="button" data-rm="${esc(id)}" aria-label="Remover ligação">×</button></span>`:''}).join('');
+    const base={id:n.id,titulo:$('#ft').value,tags:$('#fg').value.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean),tipo:$('#fp').value,liga},sg=sugestoes(base,todas);
+    $('#lsug').innerHTML=sg.length?`<small class="vazio">Parece tratar do mesmo item:</small>`+sg.map(({n:x})=>`<div class="lig-sug"><span><b>${esc(x.titulo)}</b> <small class="vazio">${NOMES[x.tipo]}, ${esc(x.tema)}</small></span><span class="acoes"><button type="button" class="btn primario" data-add="${esc(x.id)}">Ligar</button><button type="button" data-ig="${esc(x.id)}">Ignorar</button></span></div>`).join(''):'';
+  };
+  let lt;const agenda=()=>{clearTimeout(lt);lt=setTimeout(desenhaL,250)};
+  $('#fl').onchange=e=>{const x=porRot.get(e.target.value);if(x&&!liga.includes(x.id))liga.push(x.id);e.target.value='';desenhaL()};
+  $('#lchips').onclick=e=>{const r=e.target.closest('[data-rm]');if(r){liga=liga.filter(y=>y!==r.dataset.rm);desenhaL()}};
+  $('#lsug').onclick=e=>{const a=e.target.closest('[data-add]'),g=e.target.closest('[data-ig]');if(a&&!liga.includes(a.dataset.add))liga.push(a.dataset.add);if(g)ignorar(n.id,g.dataset.ig);desenhaL()};
+  $('#ft').oninput=agenda;$('#fg').addEventListener('input',agenda);desenhaL();
   const prev=async()=>{try{$('#pv').innerHTML=(await post('/api/preview','POST',{corpo:$('#fc').value})).html}catch{}};
   let pt;$('#fc').oninput=()=>{clearTimeout(pt);pt=setTimeout(prev,300)};prev();
-  $('.sug').onclick=e=>{const t=e.target.dataset.t;if(!t)return;const i=$('#fg'),l=i.value.split(',').map(s=>s.trim()).filter(Boolean);if(!l.includes(t))l.push(t);i.value=l.join(', ')};
-  $('#fp').onchange=e=>{const c=$('#fc');if(c.value.trim()===(modelo||'').trim()){modelo=meta.modelos[e.target.value];c.value=modelo;prev()}};
+  $('.sug').onclick=e=>{const t=e.target.dataset.t;if(!t)return;const i=$('#fg'),l=i.value.split(',').map(s=>s.trim()).filter(Boolean);if(!l.includes(t))l.push(t);i.value=l.join(', ');agenda()};
+  $('#fp').onchange=e=>{const c=$('#fc');if(c.value.trim()===(modelo||'').trim()){modelo=meta.modelos[e.target.value];c.value=modelo;prev()}desenhaL()};
   $('#ae').onclick=()=>{$('.duo').classList.remove('prev');$('#ae').classList.add('on');$('#av').classList.remove('on')};
   $('#av').onclick=()=>{prev();$('.duo').classList.add('prev');$('#av').classList.add('on');$('#ae').classList.remove('on')};
   $('#an').onclick=async()=>{try{$('#fc').value=(await post('/api/normalizar','POST',{corpo:$('#fc').value})).corpo;prev();msg('Formatação ajustada. Confira na prévia.','')}catch(x){msg(x.message)}};
   if($('#fu'))$('#fu').onchange=async e=>{const f=e.target.files[0];if(!f)return;const fd=new FormData();fd.append('arquivo',f);
-    try{const r=await api('/api/upload',{method:'POST',body:fd});if(!$('#ft').value)$('#ft').value=r.titulo;$('#fc').value=r.corpo;modelo=null;prev();msg('Importado. Revise o texto, escolha tema, tipo e tags e salve.','')}catch(x){msg(x.message)}};
-  const salvar=async()=>{try{const r=await post('/api/notas','PUT',{id:n.id,titulo:$('#ft').value,tema:$('#fm').value,tipo:$('#fp').value,tags:$('#fg').value,corpo:$('#fc').value});location.hash='#/nota/'+r.id}catch(x){msg(x.message)}};
+    try{const r=await api('/api/upload',{method:'POST',body:fd});if(!$('#ft').value)$('#ft').value=r.titulo;$('#fc').value=r.corpo;modelo=null;prev();desenhaL();msg('Importado. Revise o texto, escolha tema, tipo e tags e salve.','')}catch(x){msg(x.message)}};
+  const salvar=async()=>{try{const r=await post('/api/notas','PUT',{id:n.id,titulo:$('#ft').value,tema:$('#fm').value,sub:$('#fs').value,tipo:$('#fp').value,tags:$('#fg').value,corpo:$('#fc').value,liga});location.hash='#/nota/'+r.id}catch(x){msg(x.message)}};
   $('#sv').onclick=salvar;
   $('main').onkeydown=e=>{if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();salvar()}};
 }
@@ -285,10 +378,11 @@ async function rota(){
   const[,r,a,b]=location.hash.split('/');
   $('main').onkeydown=null;
   try{
-    meta=await api('/api/meta');
+    meta=await api('/api/meta');document.body.classList.toggle('leitura',meta.modo==='leitura');$('#modo').hidden=meta.modo!=='leitura';
+    if(meta.modo==='leitura'&&(r==='nova'||r==='editar')){location.hash='#/';return}
     if(r==='nota')await ver(a,b);
-    else if(r==='nova')editor(null);
-    else if(r==='editar')editor(await api(`/api/notas/${a}/${b}`));
+    else if(r==='nova')await editor(null);
+    else if(r==='editar')await editor(await api(`/api/notas/${a}/${b}`));
     else if(r==='notas')await lista();
     else await inicio();
   }catch(e){$('main').innerHTML=`<p class="erro">${esc(e.message)}</p><a href="#/">Voltar ao início</a>`}

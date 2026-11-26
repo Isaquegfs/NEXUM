@@ -53,6 +53,43 @@ Ao importar um docx, `// Título` e `#` seguem a mesma regra. Também são recon
 do Word, fonte monoespaçada, caixas de uma célula e comandos comuns. O botão "Arrumar formatação"
 no editor aplica tudo isso ao texto que você colar ou escrever.
 
+## Subpastas
+
+Além da pasta (tema), uma nota pode ter uma **subpasta** opcional: `linux` com `zabbix` e `ad`, por exemplo.
+No mapa, a subpasta aparece como uma cápsula tracejada ligada à pasta, e as notas saem dela. A subpasta é
+gravada no cabeçalho da nota (`sub`); o arquivo continua em `notas/<tema>/`.
+
+## Modos de acesso: editor e somente leitura
+
+Um único processo atende duas portas:
+
+| Porta | Modo | Variável |
+|---|---|---|
+| 3000 | Editor (padrão) | `PORT` |
+| 3001 | Somente leitura | `PORT_VIEW` (use `0` para desligar) |
+
+A porta de leitura recusa qualquer escrita no servidor e esconde os botões de edição. Senhas separadas:
+`SENHA` protege o editor e `SENHA_VIEW` protege a leitura. Sem `SENHA_VIEW`, a porta de leitura fica aberta.
+
+    SENHA="senha-do-editor" SENHA_VIEW="senha-de-leitura" npm start
+
+Para compartilhar só a leitura, exponha apenas a porta 3001 (no Nginx ou no firewall).
+
+## Tipos de nota
+
+Tutorial, Erro e solução, **Script**, Ideia e Anotação. O Script tem modelo próprio (o que faz, requisitos,
+como executar, código).
+
+## Ligações entre notas
+
+Uma nota pode ser ligada a outras, em par (grava `liga` no cabeçalho das duas). O uso principal é
+ligar um **script** ao **manual** do mesmo item: o manual mostra o script que o automatiza, e o script
+mostra o manual. No editor, o campo "Ligações" aceita o título da outra nota.
+
+O sistema também **sugere** ligações quando os títulos parecem tratar do mesmo item (ignorando palavras
+como "script" e "manual") e permite resolver com um clique, no editor, na nota e no início.
+"Ignorar" guarda a decisão no navegador. No mapa, notas ligadas aparecem unidas por uma linha dourada.
+
 ## Início
 
 Mapa de conexões: cada área é um nó ligado ao núcleo, e duas áreas se ligam quando compartilham tags.
